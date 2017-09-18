@@ -100,12 +100,16 @@ public:
    //***************************************************************************
    // Thread base class overloads.
 
-   // threadInitFunction launches the child socket thread.
-   // threadExitFunction shuts down the child socket thread
-   // executeOnTimer sends a periodic status message.
-   void threadInitFunction() override; 
-   void threadExitFunction() override; 
-   void executeOnTimer(int) override;
+   // Thread init function. This is called by the base class immedidately 
+   // after the thread starts running.
+   void threadInitFunction() override;
+
+   // Thread exit function. This is called by the base class immedidately
+   // before the thread is terminated.
+   void threadExitFunction() override;
+
+   // Execute periodically. This is called by the base class timer.
+   void executeOnTimer(int aTimerCount) override;
 
    //***************************************************************************
    //***************************************************************************

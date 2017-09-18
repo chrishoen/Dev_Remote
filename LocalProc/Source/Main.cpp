@@ -26,7 +26,7 @@ int main(int argc,char** argv)
    // Launch program threads.
 
    Remote::gClientThread = new Remote::ClientThread;
-   Remote::gClientThread->launchThread();
+   Remote::gClientThread->launchThreads();
 
    //***************************************************************************
    //***************************************************************************
@@ -42,7 +42,7 @@ int main(int argc,char** argv)
    //***************************************************************************
    // Launch program threads.
 
-   Remote::gClientThread->shutdownThread();
+   Remote::gClientThread->shutdownThreads();
    delete Remote::gClientThread;
 
    //***************************************************************************

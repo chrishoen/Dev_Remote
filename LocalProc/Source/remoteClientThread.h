@@ -7,9 +7,9 @@ Remote client thread class.
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-#include "risContainers.h"
+
+#include "risThreadsTwoThread.h"
 #include "risNetTcpMsgClientThread.h"
-#include "risThreadsQCallThread.h"
 
 #include "remoteMsg.h"
 
@@ -52,7 +52,7 @@ namespace Remote
 // messages. The processing is done by the message processor object.
 //
 
-class  ClientThread : public Ris::Threads::BaseQCallThread
+class  ClientThread : public Ris::Threads::BaseTwoThread
 {
 public:
 
@@ -87,7 +87,7 @@ public:
    //***************************************************************************
    // Infrastructure.
 
-   typedef Ris::Threads::BaseQCallThread BaseClass;
+   typedef Ris::Threads::BaseTwoThread BaseClass;
 
    // Constructor.
    ClientThread();
@@ -98,12 +98,16 @@ public:
    //***************************************************************************
    // Thread base class overloads.
 
-   // threadInitFunction launches the child socket thread.
-   // threadExitFunction shuts down the child socket thread
-   // executeOnTimer sends a periodic status message.
-   void threadInitFunction() override; 
-   void threadExitFunction() override; 
-   void executeOnTimer(int) override;
+   // Thread init function. This is called by the base class immedidately 
+   // after the thread starts running.
+   void threadInitFunction() override;
+
+   // Thread exit function. This is called by the base class immedidately
+   // before the thread is terminated.
+   void threadExitFunction() override;
+
+   // Execute periodically. This is called by the base class timer.
+   void executeOnTimer(int aTimerCount) override;
 
    //***************************************************************************
    //***************************************************************************

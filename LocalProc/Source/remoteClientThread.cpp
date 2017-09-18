@@ -20,9 +20,20 @@ namespace Remote
 
 ClientThread::ClientThread()
 {
-   // Initialize base class variables.
-   BaseClass::setThreadPriorityHigh();
-   BaseClass::mTimerPeriod = 10;
+   // Set base class thread priority
+   BaseClass::mShortThread->setThreadPriorityHigh();
+
+   // Set timer period
+   BaseClass::mShortThread->mTimerPeriod = 1000;
+
+   // Set base class call pointers
+   BaseClass::mShortThread->mThreadInitCallPointer.bind(this,&ClientThread::threadInitFunction);
+   BaseClass::mShortThread->mThreadExitCallPointer.bind(this,&ClientThread::threadExitFunction);
+   BaseClass::mShortThread->mThreadExecuteOnTimerCallPointer.bind(this,&ClientThread::executeOnTimer);
+
+   // Initialize QCalls.
+   mSessionQCall.bind (this->mShortThread,this,&ClientThread::executeSession);
+   mRxMsgQCall.bind   (this->mShortThread,this,&ClientThread::executeRxMsg);
 
    // Initialize variables.
    mTcpClientThread = 0;
@@ -31,10 +42,6 @@ ClientThread::ClientThread()
    mPeriodicCount = 0;
    mStatusCount1 = 0;
    mStatusCount2 = 0;
-
-   // Initialize QCalls
-   mSessionQCall.bind (this,&ClientThread::executeSession);
-   mRxMsgQCall.bind   (this,&ClientThread::executeRxMsg);
 }
 
 //******************************************************************************
