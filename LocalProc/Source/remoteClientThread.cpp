@@ -8,7 +8,7 @@
 
 #include "remoteSettings.h"
 
-#define  _PROCOCLIENTTHREAD_CPP_
+#define  _REMOTECLIENTTHREAD_CPP_ 
 #include "remoteClientThread.h"
 
 namespace Remote
@@ -20,21 +20,25 @@ namespace Remote
 
 ClientThread::ClientThread()
 {
+   // Initialize base class variables.
    BaseClass::setThreadPriorityHigh();
    BaseClass::mTimerPeriod = 10;
 
-   mTcpClientThread = new Ris::Net::TcpMsgClientThread;
-   mConnectionFlag=false;
-   mPeriodicEnable=false;
-   mPeriodicCount=0;
-   mStatusCount1=0;
-   mStatusCount2=0;
+   // Initialize variables.
+   mTcpClientThread = 0;
+   mConnectionFlag = false;
+   mPeriodicEnable = false;
+   mPeriodicCount = 0;
+   mStatusCount1 = 0;
+   mStatusCount2 = 0;
 
    // Initialize QCalls
    mSessionQCall.bind (this,&ClientThread::executeSession);
    mRxMsgQCall.bind   (this,&ClientThread::executeRxMsg);
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 
 ClientThread::~ClientThread()
@@ -43,42 +47,36 @@ ClientThread::~ClientThread()
 }
 
 //******************************************************************************
-// This sets configuration members
+//******************************************************************************
+//******************************************************************************
 
-void ClientThread::configure()
+void ClientThread::threadInitFunction()
 {
-   Prn::print(Prn::ThreadInit1, "ClientThread::configure");
+   Prn::print(Prn::ThreadInit1, "ClientThread::launch");
 
-   //--------------------------------------------------------------------------- 
-   // Configure message monkey
+   // Configure message monkey.
    mMonkeyCreator.configure(gSettings.mMyAppNumber);
 
-   //---------------------------------------------------------------------------
-   // Configure child thread, client
+   // Create child thread.
+   mTcpClientThread = new Ris::Net::TcpMsgClientThread;
 
+   // Configure child thread.
    mTcpClientThread->configure(
       &mMonkeyCreator,
       "127.0.0.1",
       gSettings.mTcpServerPort,
       &mSessionQCall,
       &mRxMsgQCall);
-}
-
-//******************************************************************************
-
-void ClientThread::launchThread()
-{
-   Prn::print(Prn::ThreadInit1, "ClientThread::launch");
 
    // Launch child thread
    mTcpClientThread->launchThread(); 
-   
-   // Launch this thread
-   BaseClass::launchThread();
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // Thread exit function, base class overload.
+
 void  ClientThread::threadExitFunction()
 {
    Prn::print(Prn::ThreadInit1, "ClientThread::threadExitFunction");
@@ -91,7 +89,10 @@ void  ClientThread::threadExitFunction()
 }
 
 //******************************************************************************
-// QCall
+//******************************************************************************
+//******************************************************************************
+// QCall.
+
 void ClientThread::executeSession (bool aConnected)
 {
    if (aConnected)
@@ -111,6 +112,8 @@ void ClientThread::executeSession (bool aConnected)
    mConnectionFlag = aConnected;
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // QCall
 
@@ -142,6 +145,8 @@ void ClientThread::executeRxMsg(Ris::ByteContent* aRxMsg)
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // Rx message handler - TestMsg
 
 void ClientThread::processRxMsg(Remote::TestMsg* aRxMsg)
@@ -150,6 +155,8 @@ void ClientThread::processRxMsg(Remote::TestMsg* aRxMsg)
    delete aRxMsg;
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // executeOnTimer
 
@@ -163,6 +170,8 @@ void ClientThread::executeOnTimer(int aTimerCount)
    sendMsg(tMsg);
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // Rx message handler - StatusRequestMsg
 
@@ -180,6 +189,8 @@ void ClientThread::processRxMsg(Remote::StatusRequestMsg* aRxMsg)
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // Rx message handler - StatusResponseMsg
 
 void ClientThread::processRxMsg(Remote::StatusResponseMsg* aRxMsg)
@@ -189,13 +200,17 @@ void ClientThread::processRxMsg(Remote::StatusResponseMsg* aRxMsg)
 }
 
 //******************************************************************************
-// This sends a message via the tcp client thread
+//******************************************************************************
+//******************************************************************************
+// Sends a message via the tcp client thread.
 
 void ClientThread::sendMsg (Remote::BaseMsg* aTxMsg)
 {
    mTcpClientThread->sendMsg(aTxMsg);
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // This sends a test message via the tcp client thread
 

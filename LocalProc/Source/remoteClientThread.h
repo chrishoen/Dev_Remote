@@ -1,5 +1,4 @@
-#ifndef _PROCOCLIENTTHREAD_H_
-#define _PROCOCLIENTTHREAD_H_
+#pragma once
 
 /*==============================================================================
 Remote client thread class.
@@ -13,6 +12,10 @@ Remote client thread class.
 #include "risThreadsQCallThread.h"
 
 #include "remoteMsg.h"
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 
 namespace Remote
 {
@@ -51,40 +54,60 @@ namespace Remote
 class  ClientThread : public Ris::Threads::BaseQCallThread
 {
 public:
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Members.
+
+   // Tcp client thread, this manages session connections and  message
+   // transmission and reception.
+   Ris::Net::TcpMsgClientThread*  mTcpClientThread;
+
+   // Message monkey used by mTcpClientThread.
+   Remote::MsgMonkeyCreator mMonkeyCreator;
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Members.
+
+   // This indicates if a server connection is valid.
+   bool mConnectionFlag;
+
+   // State variables.
+   bool mPeriodicEnable;
+   int  mPeriodicCount;
+   int  mStatusCount1;
+   int  mStatusCount2;
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Infrastructure.
+
    typedef Ris::Threads::BaseQCallThread BaseClass;
 
+   // Constructor.
    ClientThread();
   ~ClientThread();
 
-   //--------------------------------------------------------------
-   // Configure:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Thread base class overloads.
 
-   void configure();
-
-
-   //--------------------------------------------------------------
-   // Thread base class overloads:
-
-   // configure sets configuration members.
-   // launch starts the child thread + this thread
-   // threadInitFunction sets up the base class multiple objects.
-   // threadExitFunction shuts down the child thread
+   // threadInitFunction launches the child socket thread.
+   // threadExitFunction shuts down the child socket thread
    // executeOnTimer sends a periodic status message.
-   void launchThread();
-   void threadExitFunction(); 
-   void executeOnTimer(int);
+   void threadInitFunction() override; 
+   void threadExitFunction() override; 
+   void executeOnTimer(int) override;
 
-   //--------------------------------------------------------------
-   // Tcp client thread, this manages session connections and 
-   // message transmission and reception
-
-   Ris::Net::TcpMsgClientThread*  mTcpClientThread;
-
-   // Message monkey used by mTcpClientThread
-   Remote::MsgMonkeyCreator mMonkeyCreator;
-
-   //--------------------------------------------------------------
-   // QCall:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods.
 
    // QCalls registered to mTcpClientThread
    Ris::Net::TcpMsgClientThread::SessionQCall  mSessionQCall;
@@ -96,43 +119,39 @@ public:
    void executeSession (bool aConnected);
    void executeRxMsg   (Ris::ByteContent* aRxMsg);
 
-   //--------------------------------------------------------------
-   // Receive message handlers:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods.
 
+   // Receive message handlers.
    void processRxMsg (Remote::TestMsg* aRxMsg);
    void processRxMsg (Remote::StatusRequestMsg* aRxMsg);
    void processRxMsg (Remote::StatusResponseMsg* aRxMsg);
 
-   //--------------------------------------------------------------
-   // Send a message via mTcpClientThread:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods.
 
+   // Send a message via mTcpClientThread:
    void sendMsg (Remote::BaseMsg* aTxMsg);
    void sendTestMsg();   
 
-   //--------------------------------------------------------------
-   // State:
-
-   // This indicates if a server connection is valid.
-   bool mConnectionFlag;
-
-   bool mPeriodicEnable;
-   int  mPeriodicCount;
-   int  mStatusCount1;
-   int  mStatusCount2;
-
 };
-//******************************************************************************
-// Global instance
 
-#ifdef _PROCOCLIENTTHREAD_CPP_
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Global singular instance.
+
+#ifdef _REMOTECLIENTTHREAD_CPP_
          ClientThread* gClientThread;
 #else
 extern   ClientThread* gClientThread;
 #endif
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 }//namespace
-
-
-#endif
-
