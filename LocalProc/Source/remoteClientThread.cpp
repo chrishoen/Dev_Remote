@@ -138,11 +138,11 @@ void ClientThread::executeRxMsg(Ris::ByteContent* aRxMsg)
       case Remote::MsgIdT::cTestMsg :
          processRxMsg((Remote::TestMsg*)tRxMsg);
          break;
-      case Remote::MsgIdT::cStatusRequestMsg :
-         processRxMsg((Remote::StatusRequestMsg*)tRxMsg);
+      case Remote::MsgIdT::cWorkRequestMsg :
+         processRxMsg((Remote::WorkRequestMsg*)tRxMsg);
          break;
-      case Remote::MsgIdT::cStatusResponseMsg :
-         processRxMsg((Remote::StatusResponseMsg*)tRxMsg);
+      case Remote::MsgIdT::cWorkResponseMsg :
+         processRxMsg((Remote::WorkResponseMsg*)tRxMsg);
          break;
       default :
          Prn::print(Prn::ThreadRun1, "ClientThread::processRxMsg %d",tRxMsg->mMessageType);
@@ -172,7 +172,7 @@ void ClientThread::executeOnTimer(int aTimerCount)
    if (!mPeriodicEnable) return;
    Prn::print(Prn::ThreadRun3, "ClientThread::executeOnTimer %d", aTimerCount);
 
-   Remote::StatusRequestMsg* tMsg = new Remote::StatusRequestMsg;
+   Remote::WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
    tMsg->mCode1 = aTimerCount;
    sendMsg(tMsg);
 }
@@ -180,15 +180,15 @@ void ClientThread::executeOnTimer(int aTimerCount)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - StatusRequestMsg
+// Rx message handler - WorkRequestMsg
 
-void ClientThread::processRxMsg(Remote::StatusRequestMsg* aRxMsg)
+void ClientThread::processRxMsg(Remote::WorkRequestMsg* aRxMsg)
 {
-   Prn::print(Prn::ThreadRun2, "ClientThread::processRxMsg_StatusRequestMsg %d",mStatusCount1++);
+   Prn::print(Prn::ThreadRun2, "ClientThread::processRxMsg_WorkRequestMsg %d",mStatusCount1++);
 
    if (true)
    {
-      Remote::StatusResponseMsg* tTxMsg = new Remote::StatusResponseMsg;
+      Remote::WorkResponseMsg* tTxMsg = new Remote::WorkResponseMsg;
       sendMsg(tTxMsg);
    }
 
@@ -198,11 +198,11 @@ void ClientThread::processRxMsg(Remote::StatusRequestMsg* aRxMsg)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - StatusResponseMsg
+// Rx message handler - WorkResponseMsg
 
-void ClientThread::processRxMsg(Remote::StatusResponseMsg* aRxMsg)
+void ClientThread::processRxMsg(Remote::WorkResponseMsg* aRxMsg)
 {
-   Prn::print(Prn::ThreadRun2, "ClientThread::processRxMsg_StatusResponseMsg %d",aRxMsg->mCode1);
+   Prn::print(Prn::ThreadRun2, "ClientThread::processRxMsg_WorkResponseMsg %d",aRxMsg->mCode1);
    delete aRxMsg;
 }
 

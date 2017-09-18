@@ -134,8 +134,8 @@ public:
    // Receive message handlers:
    void processRxMsg (int aSessionIndex,Remote::TestMsg* aRxMsg);
    void processRxMsg (int aSessionIndex,Remote::FirstMessageMsg* aRxMsg);
-   void processRxMsg (int aSessionIndex,Remote::StatusRequestMsg* aRxMsg);
-   void processRxMsg (int aSessionIndex,Remote::StatusResponseMsg* aRxMsg);
+   void processRxMsg (int aSessionIndex,Remote::WorkRequestMsg* aRxMsg);
+   void processRxMsg (int aSessionIndex,Remote::WorkResponseMsg* aRxMsg);
 
    //--------------------------------------------------------------
    // Send a message via mTcpServerThread:

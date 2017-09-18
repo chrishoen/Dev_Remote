@@ -12,6 +12,7 @@
 
 namespace Remote
 {
+
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -60,9 +61,9 @@ void FirstMessageMsg::copyToFrom (Ris::ByteBuffer* aBuffer)
 //******************************************************************************
 //******************************************************************************
 
-StatusRequestMsg::StatusRequestMsg ()
+WorkRequestMsg::WorkRequestMsg ()
 {
-   mMessageType = MsgIdT::cStatusRequestMsg;
+   mMessageType = MsgIdT::cWorkRequestMsg;
 
    mCode1 = 101;
    mCode2 = 102;
@@ -73,7 +74,7 @@ StatusRequestMsg::StatusRequestMsg ()
    mNumOfWords=MaxWords;
 } 
 
-void StatusRequestMsg::copyToFrom (Ris::ByteBuffer* aBuffer)
+void WorkRequestMsg::copyToFrom (Ris::ByteBuffer* aBuffer)
 {
    mHeader.headerCopyToFrom(aBuffer,this);
 
@@ -95,9 +96,9 @@ void StatusRequestMsg::copyToFrom (Ris::ByteBuffer* aBuffer)
 //******************************************************************************
 //******************************************************************************
 
-StatusResponseMsg::StatusResponseMsg()
+WorkResponseMsg::WorkResponseMsg()
 {
-   mMessageType = MsgIdT::cStatusResponseMsg;
+   mMessageType = MsgIdT::cWorkResponseMsg;
 
    mCode1 = 201;
    mCode2 = 202;
@@ -108,7 +109,7 @@ StatusResponseMsg::StatusResponseMsg()
    mNumOfWords = MaxWords;
 }
 
-void StatusResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
+void WorkResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 {
    mHeader.headerCopyToFrom(aBuffer, this);
 
@@ -129,69 +130,6 @@ void StatusResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-
-DataRecord::DataRecord ()
-{
-   mCode1 = 0;
-   mCode2 = 0;
-   mCode3 = 0;
-   mCode4 = 0;
-} 
-
-void DataRecord::copyToFrom (Ris::ByteBuffer* aBuffer)
-{
-   aBuffer->copy( &mCode1 );
-   aBuffer->copy( &mCode2 );
-   aBuffer->copy( &mCode3 );
-   aBuffer->copy( &mCode4 );
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-
-DataMsg::DataMsg()
-{
-   mMessageType = MsgIdT::cDataMsg;
-
-   mUChar  = 0;
-   mUShort = 0;
-   mUInt   = 0;
-   mUInt64 = 0;
-   mChar   = 0;
-   mShort  = 0;
-   mInt    = 0;
-   mInt64  = 0;
-   mFloat  = 0.0f;
-   mDouble = 0.0;
-   mBool   = false;
-
-   mString1[0]=0;
-   mString2[0]=0;
-}
-
-void DataMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
-{
-   mHeader.headerCopyToFrom(aBuffer, this);
-
-   aBuffer->copy( &mUChar  );
-   aBuffer->copy( &mUShort );
-   aBuffer->copy( &mUInt   );
-   aBuffer->copy( &mUInt64 );
-   aBuffer->copy( &mChar   );
-   aBuffer->copy( &mShort  );
-   aBuffer->copy( &mInt    );
-   aBuffer->copy( &mInt64  );
-   aBuffer->copy( &mFloat  );
-   aBuffer->copy( &mDouble );
-   aBuffer->copy( &mBool   );
-   aBuffer->copy( &mDataRecord );
-   aBuffer->copyS( mString1 );
-   aBuffer->copyS( mString2 );
-
-   mHeader.headerReCopyToFrom(aBuffer, this);
-}
-
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -209,22 +147,23 @@ Ris::ByteContent* MsgCreator::createMsg (int aMessageType)
    case MsgIdT::cFirstMessageMsg :
       tMsg = new FirstMessageMsg;
       break;
-   case MsgIdT::cStatusRequestMsg :
-      tMsg = new StatusRequestMsg;
+   case MsgIdT::cWorkRequestMsg :
+      tMsg = new WorkRequestMsg;
       break;
-   case MsgIdT::cStatusResponseMsg :
-      tMsg = new StatusResponseMsg;
-      break;
-   case MsgIdT::cDataMsg :
-      tMsg = new DataMsg;
+   case MsgIdT::cWorkResponseMsg :
+      tMsg = new WorkResponseMsg;
       break;
    default :
       return 0;
       break;
    }
+
    return tMsg;
 }
 
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 }//namespace
 
 

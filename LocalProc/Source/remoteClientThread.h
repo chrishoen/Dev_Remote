@@ -131,8 +131,8 @@ public:
 
    // Receive message handlers.
    void processRxMsg (Remote::TestMsg* aRxMsg);
-   void processRxMsg (Remote::StatusRequestMsg* aRxMsg);
-   void processRxMsg (Remote::StatusResponseMsg* aRxMsg);
+   void processRxMsg (Remote::WorkRequestMsg* aRxMsg);
+   void processRxMsg (Remote::WorkResponseMsg* aRxMsg);
 
    //***************************************************************************
    //***************************************************************************

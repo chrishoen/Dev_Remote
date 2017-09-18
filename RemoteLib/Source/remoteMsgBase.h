@@ -1,5 +1,4 @@
-#ifndef _PROCOMSG_BASE_H_
-#define _PROCOMSG_BASE_H_
+#pragma once
 /*==============================================================================
 This file contains a set of classes that encapsulate the message set
 that is used to communicate with Intranet. The messages are specified
@@ -23,11 +22,6 @@ These messages all have the same common form, they all contain a
 common message header. The base class has a Header member object that
 encapsulates the header.
 
-These are the messages:
-
-Test
-FirstMessage
-StatusRequest
 ==============================================================================*/
 
 //******************************************************************************
@@ -217,6 +211,8 @@ public:
    Ris::BaseMsgMonkey* createMonkey();
 };
 
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 }//namespace
-#endif
 

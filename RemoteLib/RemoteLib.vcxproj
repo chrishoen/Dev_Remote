@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="Source\remoteMsg.cpp" />
     <ClCompile Include="Source\remoteMsgBase.cpp" />
-    <ClCompile Include="Source\remoteMsgHelper.cpp" />
     <ClCompile Include="Source\remoteSettings.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -31,7 +30,6 @@
   <ItemGroup>
     <ClInclude Include="Source\remoteMsg.h" />
     <ClInclude Include="Source\remoteMsgBase.h" />
-    <ClInclude Include="Source\remoteMsgHelper.h" />
     <ClInclude Include="Source\remoteSettings.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>

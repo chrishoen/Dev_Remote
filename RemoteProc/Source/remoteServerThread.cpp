@@ -125,11 +125,11 @@ void ServerThread::executeRxMsg(int aSessionIndex,Ris::ByteContent* aMsg)
       case Remote::MsgIdT::cFirstMessageMsg :
          processRxMsg(aSessionIndex,(Remote::FirstMessageMsg*)tMsg);
          break;
-      case Remote::MsgIdT::cStatusRequestMsg :
-         processRxMsg(aSessionIndex,(Remote::StatusRequestMsg*)tMsg);
+      case Remote::MsgIdT::cWorkRequestMsg :
+         processRxMsg(aSessionIndex,(Remote::WorkRequestMsg*)tMsg);
          break;
-      case Remote::MsgIdT::cStatusResponseMsg :
-         processRxMsg(aSessionIndex,(Remote::StatusResponseMsg*)tMsg);
+      case Remote::MsgIdT::cWorkResponseMsg :
+         processRxMsg(aSessionIndex,(Remote::WorkResponseMsg*)tMsg);
          break;
       default :
          Prn::print(Prn::ThreadRun1, "ServerThread::processRxMsg %d",tMsg->mMessageType);
@@ -183,15 +183,15 @@ void ServerThread::executeOnTimer(int aTimerCount)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - StatusRequestMsg
+// Rx message handler - WorkRequestMsg
 
-void ServerThread::processRxMsg(int aSessionIndex,Remote::StatusRequestMsg* aRxMsg)
+void ServerThread::processRxMsg(int aSessionIndex,Remote::WorkRequestMsg* aRxMsg)
 {
-   Prn::print(Prn::ThreadRun2, "ServerThread::processRxMsg_StatusRequestMsg %d",aRxMsg->mCode1);
+   Prn::print(Prn::ThreadRun2, "ServerThread::processRxMsg_WorkRequestMsg %d",aRxMsg->mCode1);
 
    if (true)
    {
-      Remote::StatusResponseMsg* tTxMsg = new Remote::StatusResponseMsg;
+      Remote::WorkResponseMsg* tTxMsg = new Remote::WorkResponseMsg;
       tTxMsg->mCode1 = aRxMsg->mCode1;
       sendMsg(aSessionIndex,tTxMsg);
    }
@@ -202,11 +202,11 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::StatusRequestMsg* aRxM
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - StatusResponseMsg
+// Rx message handler - WorkResponseMsg
 
-void ServerThread::processRxMsg(int aSessionIndex,Remote::StatusResponseMsg* aRxMsg)
+void ServerThread::processRxMsg(int aSessionIndex,Remote::WorkResponseMsg* aRxMsg)
 {
-   Prn::print(Prn::ThreadRun2, "ServerThread::processRxMsg_StatusResponseMsg");
+   Prn::print(Prn::ThreadRun2, "ServerThread::processRxMsg_WorkResponseMsg");
    delete aRxMsg;
 }
 

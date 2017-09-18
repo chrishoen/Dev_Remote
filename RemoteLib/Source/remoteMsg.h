@@ -1,5 +1,4 @@
-#ifndef _PROCOMSG_H_
-#define _PROCOMSG_H_
+#pragma once
 /*==============================================================================
 This file contains a set of classes that encapsulate a message set.
 
@@ -31,6 +30,10 @@ encapsulates the header.
 
 namespace Remote
 {
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -40,12 +43,11 @@ class MsgIdT
 {
 public:
 
-   static const int   cUnspecifiedMsg    = 0;
-   static const int   cTestMsg           = 1;
-   static const int   cFirstMessageMsg   = 2;
-   static const int   cStatusRequestMsg  = 3;
-   static const int   cStatusResponseMsg = 4;
-   static const int   cDataMsg           = 5;
+   static const int   cUnspecifiedMsg  = 0;
+   static const int   cTestMsg         = 1;
+   static const int   cFirstMessageMsg = 2;
+   static const int   cWorkRequestMsg  = 3;
+   static const int   cWorkResponseMsg = 4;
 
 };
 
@@ -98,7 +100,7 @@ public:
 //******************************************************************************
 //******************************************************************************
 
-class StatusRequestMsg : public BaseMsg
+class WorkRequestMsg : public BaseMsg
 {
 public:
 
@@ -117,7 +119,7 @@ public:
    //***************************************************************************
    // Methods:
 
-   StatusRequestMsg();
+   WorkRequestMsg();
    void copyToFrom (Ris::ByteBuffer* aBuffer);
 };
 
@@ -125,7 +127,7 @@ public:
 //******************************************************************************
 //******************************************************************************
 
-class StatusResponseMsg : public BaseMsg
+class WorkResponseMsg : public BaseMsg
 {
 public:
 
@@ -144,64 +146,13 @@ public:
    //***************************************************************************
    // Methods:
 
-   StatusResponseMsg();
+   WorkResponseMsg();
    void copyToFrom(Ris::ByteBuffer* aBuffer);
 };
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-
-class DataRecord : public Ris::ByteContent
-{
-public:
-
-   //***************************************************************************
-   // Members:
-
-   int mCode1;
-   int mCode2;
-   int mCode3;
-   int mCode4;
-
-   //***************************************************************************
-   // Methods:
-
-   DataRecord();
-   void copyToFrom (Ris::ByteBuffer* aBuffer);
-};
-
-class DataMsg : public BaseMsg
-{
-public:
-
-   //***************************************************************************
-   // Members:
-
-   unsigned char       mUChar;
-   unsigned short      mUShort;
-   unsigned int        mUInt;
-   unsigned long long  mUInt64;
-   char                mChar;
-   short               mShort;
-   int                 mInt;
-   long long           mInt64;
-   float               mFloat;
-   double              mDouble;
-   bool                mBool;
-
-   char                mString1[100];
-   char                mString2[100];
-
-   DataRecord          mDataRecord;
-
-   //***************************************************************************
-   // Methods:
-
-   DataMsg();
-   void copyToFrom(Ris::ByteBuffer* aBuffer);
-};
-
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -210,12 +161,13 @@ public:
 class MsgCreator : public Ris::BaseMsgCreator
 {
 public:
-   //***********************************************************************
-   // Create a new message, based on a message type.
 
+   // Create a new message, based on a message type.
    Ris::ByteContent* createMsg (int aMessageType) override;
 };
 
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 }//namespace
-#endif
 

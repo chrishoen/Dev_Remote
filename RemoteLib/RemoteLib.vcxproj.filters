@@ -14,9 +14,6 @@
     <ClCompile Include="Source\remoteMsgBase.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="Source\remoteMsgHelper.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\remoteSettings.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -27,9 +24,6 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\remoteMsgBase.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\remoteMsgHelper.h">
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\remoteSettings.h">
