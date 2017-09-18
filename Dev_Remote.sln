@@ -8,6 +8,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RemoteLib", "RemoteLib\RemoteLib.vcxproj", "{3DC4966D-C5CD-42DA-B0B9-BEA511E0A486}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Files", "Files", "{9D790AF8-2ACE-49C6-8193-A9BDAB7F21A5}"
+	ProjectSection(SolutionItems) = preProject
+		Files\Remote_Settings.txt = Files\Remote_Settings.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
