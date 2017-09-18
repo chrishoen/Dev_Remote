@@ -178,6 +178,7 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::FirstMessageMsg* aRxMs
 
 void ServerThread::executeOnTimer(int aTimerCount)
 {
+   return;
    Prn::print(Prn::ThreadRun3, "ServerThread::executeOnTimer %d",mPeriodicCount++);
 }
 

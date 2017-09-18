@@ -2,6 +2,7 @@
 #include "stdafx.h"
 
 #include "remoteSettings.h"
+#include "remoteClientThread.h"
 #include "CmdLineExec.h"
 
 //******************************************************************************
@@ -27,6 +28,8 @@ void CmdLineExec::reset()
 void CmdLineExec::execute(Ris::CmdLineCmd* aCmd)
 {
    if(aCmd->isCmd("RESET"  ))  reset();
+   if(aCmd->isCmd("Tx"     ))  executeTx(aCmd); 
+
    if(aCmd->isCmd("GO1"    ))  executeGo1(aCmd);
    if(aCmd->isCmd("GO2"    ))  executeGo2(aCmd);
    if(aCmd->isCmd("GO3"    ))  executeGo3(aCmd);
@@ -38,6 +41,14 @@ void CmdLineExec::execute(Ris::CmdLineCmd* aCmd)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+
+void CmdLineExec::executeTx(Ris::CmdLineCmd* aCmd)
+{
+   aCmd->setArgDefault(1,1);
+
+   Remote::TestMsg* tMsg = new Remote::TestMsg;
+   Remote::gClientThread->sendMsg(tMsg);
+}
 
 //******************************************************************************
 //******************************************************************************
