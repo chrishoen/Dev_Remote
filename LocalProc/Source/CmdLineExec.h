@@ -1,11 +1,11 @@
-#ifndef _CMDLINEEXEC_H_
-#define _CMDLINEEXEC_H_
+#pragma once
 
 #include "risCmdLineExec.h"
 
 //******************************************************************************
-// specific command line executive
 //******************************************************************************
+//******************************************************************************
+// Specific command line executive.
 
 class CmdLineExec : public Ris::BaseCmdLineExec
 {
@@ -22,10 +22,10 @@ public:
   void executeGo4(Ris::CmdLineCmd* aCmd);
   void executeGo5(Ris::CmdLineCmd* aCmd);
 
-  double mX;
-  double mT;
+  void executeParms(Ris::CmdLineCmd* aCmd);
 };
 
 //******************************************************************************
-#endif
+//******************************************************************************
+//******************************************************************************
 

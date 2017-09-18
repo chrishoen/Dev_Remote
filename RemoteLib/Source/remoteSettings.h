@@ -60,8 +60,6 @@ public:
    static const int cNone       = 0;
    static const int cTcpServer  = 1;
    static const int cTcpClient  = 2;
-   static const int cUdpPeer    = 3;
-   static const int cSerialPeer = 3;
 
    static const int cMaxStringSize = 30;
 
@@ -77,19 +75,6 @@ public:
    // TCP server address and port.
    char mTcpServerIPAddress[cMaxStringSize];
    int  mTcpServerPort;
-
-   // UDP address and port.
-   char mMyUdpIPAddress[cMaxStringSize];
-   int  mMyUdpPort;
-
-   // UDP address and port.
-   char mOtherUdpIPAddress[cMaxStringSize];
-   int  mOtherUdpPort;
-
-   // Serial setup and port.
-   int  mSerialPortNumber;
-   char mSerialPortSetup[cMaxStringSize];
-   int  mSerialRxTimeout;
 
    //***************************************************************************
    //***************************************************************************
