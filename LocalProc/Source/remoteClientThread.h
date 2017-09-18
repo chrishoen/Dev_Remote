@@ -21,6 +21,8 @@ namespace Remote
 {
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // Client Thread.
 //
 // This is the client thread class. It inherits from BaseQCallThread to
@@ -49,7 +51,6 @@ namespace Remote
 // the execution context for processing the session changes and the received 
 // messages. The processing is done by the message processor object.
 //
-//******************************************************************************
 
 class  ClientThread : public Ris::Threads::BaseQCallThread
 {

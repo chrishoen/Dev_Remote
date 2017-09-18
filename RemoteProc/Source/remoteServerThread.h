@@ -21,6 +21,8 @@ namespace Remote
 {
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // Server Thread.
 //
 // This is the server thread class. It inherits from BaseQCallThread to
@@ -49,47 +51,66 @@ namespace Remote
 // the execution context for processing the session changes and the received 
 // messages. The processing is done by the message processor object.
 //
-//******************************************************************************
 
 class ServerThread : public Ris::Threads::BaseQCallThread
 {
 public:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Members.
+
+   // Tcp server thread, this manages session connections and 
+   // message transmission and reception.
+   Ris::Net::TcpMsgServerThread* mTcpServerThread;
+
+   // Maximum number of sessions for mTcpServerThread.
+   enum {MaxSessions=10};
+
+   // Message monkey used by mTcpServerThread.
+   Remote::MsgMonkeyCreator mMonkeyCreator;
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Members.
+
+   // Session state lists:
+   Ris::Net::SessionStateList mSessionStateList;
+
+   // State variables.
+   bool mPeriodicEnable;
+   int  mPeriodicCount;
+   int  mStatusCount1;
+   int  mStatusCount2;
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Infrastructure.
+
    typedef Ris::Threads::BaseQCallThread BaseClass;
 
+   // Constructor.
    ServerThread();
   ~ServerThread();
 
-   //--------------------------------------------------------------
-   // Configure:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Thread base class overloads.
 
-   void configure();
+   // threadInitFunction launches the child socket thread.
+   // threadExitFunction shuts down the child socket thread
+   // executeOnTimer sends a periodic status message.
+   void threadInitFunction() override; 
+   void threadExitFunction() override; 
+   void executeOnTimer(int) override;
 
-   //--------------------------------------------------------------
-   // Thread base class overloads:
-
-   // launch starts the child threads + this thread
-   // threadInitFunction sets up the base class multiple objects.
-   // threadExitFunction shuts down the child thread
-   // shutdown shuts down child threads + this thread
-
-   void launchThread();
-   void threadExitFunction(); 
-   void executeOnTimer(int);
-
-   //--------------------------------------------------------------
-   // Tcp server thread, this manages session connections and 
-   // message transmission and reception
-
-   Ris::Net::TcpMsgServerThread* mTcpServerThread;
-
-   // Maximum number of sessions for mTcpServerThread
-   enum {MaxSessions=10};
-
-   // Message monkey used by mTcpServerThread
-   Remote::MsgMonkeyCreator mMonkeyCreator;
-
-   //--------------------------------------------------------------
-   // QCall:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods.
 
    // QCalls registered to mTcpServerThread
    Ris::Net::TcpMsgServerThread::SessionQCall  mSessionQCall;
@@ -101,23 +122,16 @@ public:
    void executeSession (int aSessionIndex,bool aConnected);
    void executeRxMsg   (int aSessionIndex,Ris::ByteContent* aRxMsg);
 
-   //--------------------------------------------------------------
-   // Receive message handlers:
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods.
 
+   // Receive message handlers:
    void processRxMsg (int aSessionIndex,Remote::TestMsg* aRxMsg);
    void processRxMsg (int aSessionIndex,Remote::FirstMessageMsg* aRxMsg);
    void processRxMsg (int aSessionIndex,Remote::StatusRequestMsg* aRxMsg);
    void processRxMsg (int aSessionIndex,Remote::StatusResponseMsg* aRxMsg);
-
-   //--------------------------------------------------------------
-   // Session state lists:
-   // These contain state about each session
-
-   Ris::Net::SessionStateList mSessionStateList;
-   bool mPeriodicEnable;
-   int  mPeriodicCount;
-   int  mStatusCount1;
-   int  mStatusCount2;
 
    //--------------------------------------------------------------
    // Send a message via mTcpServerThread:
@@ -125,16 +139,20 @@ public:
    void sendMsg (int aSessionIndex,Remote::BaseMsg* aTxMsg);
    void sendTestMsg (int aAppNumber);
 };
-//******************************************************************************
-// Global instance
 
-#ifdef _PROCOSERVERTHREAD_CPP_
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Global singular instance.
+
+#ifdef _REMOTESERVERTHREAD_CPP_
          ServerThread* gServerThread;
 #else
 extern   ServerThread* gServerThread;
 #endif
 
-
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 }//namespace
 

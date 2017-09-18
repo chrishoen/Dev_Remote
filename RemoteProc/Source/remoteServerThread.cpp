@@ -9,7 +9,7 @@ ServerThread.cpp
 
 #include "remoteSettings.h"
 
-#define  _PROCOSERVERTHREAD_CPP_
+#define  _REMOTESERVERTHREAD_CPP_
 #include "remoteServerThread.h"
 
 namespace Remote
@@ -18,25 +18,26 @@ namespace Remote
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+// Constructor.
 
 ServerThread::ServerThread()
 {
+   // Initialize base class variables.
    BaseClass::setThreadPriorityHigh();
    BaseClass::mTimerPeriod = 1000;
 
+   // Initialize variables.
    mPeriodicEnable=false;
    mPeriodicCount=0;
    mStatusCount1=0;
    mStatusCount2=0;
 
-   mTcpServerThread  = new Ris::Net::TcpMsgServerThread;
+   mTcpServerThread  = 0;
 
-   // Initialize QCalls
+   // Initialize qcalls.
    mSessionQCall.bind (this,&ServerThread::executeSession);
    mRxMsgQCall.bind   (this,&ServerThread::executeRxMsg);
 }
-
-//******************************************************************************
 
 ServerThread::~ServerThread()
 {
@@ -44,19 +45,20 @@ ServerThread::~ServerThread()
 }
 
 //******************************************************************************
-// This sets configuration members
+//******************************************************************************
+//******************************************************************************
 
-void ServerThread::configure()
+void ServerThread::threadInitFunction()
 {
-   Prn::print(Prn::ThreadInit1, "ServerThread::configure");
+   Prn::print(Prn::ThreadInit1, "ServerThread::threadInitFunction");
 
-   //--------------------------------------------------------------------------- 
-   // Configure message monkey
+   // Configure message monkey.
    mMonkeyCreator.configure(gSettings.mMyAppNumber);
 
-   //--------------------------------------------------------------------------- 
-   // Configure child thread, server
+   // Create server socket child thread.
+   mTcpServerThread  = new Ris::Net::TcpMsgServerThread;
 
+   // Create server socket child thread.
    mTcpServerThread->configure(
       &mMonkeyCreator,
       "0.0.0.0",
@@ -64,21 +66,13 @@ void ServerThread::configure()
       MaxSessions,
       &mSessionQCall,
       &mRxMsgQCall);
+
+   // Launch server socket child thread.
+   mTcpServerThread->launchThread(); 
 }
 
 //******************************************************************************
-
-void ServerThread::launchThread()
-{
-   Prn::print(Prn::ThreadInit1, "ServerThread::launch");
-
-   // Launch child thread
-   mTcpServerThread->launchThread(); 
-   
-   // Launch this thread
-   BaseClass::launchThread();
-}
-
+//******************************************************************************
 //******************************************************************************
 // Thread exit function, base class overload.
 
@@ -94,6 +88,8 @@ void  ServerThread::threadExitFunction()
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // QCall
 
 void ServerThread::executeSession (int aSessionIndex,bool aConnected)
@@ -108,6 +104,8 @@ void ServerThread::executeSession (int aSessionIndex,bool aConnected)
    }
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // QCall
 void ServerThread::executeRxMsg(int aSessionIndex,Ris::ByteContent* aMsg)
@@ -141,6 +139,8 @@ void ServerThread::executeRxMsg(int aSessionIndex,Ris::ByteContent* aMsg)
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // Rx message handler - TestMsg
 
 void ServerThread::processRxMsg(int aSessionIndex,Remote::TestMsg* aRxMsg)
@@ -149,6 +149,8 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::TestMsg* aRxMsg)
    delete aRxMsg;
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // Rx message handler - FirstMessageMsg
 //
@@ -160,19 +162,15 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::FirstMessageMsg* aRxMs
 {
    Prn::print(Prn::ThreadRun1, "ServerThread::processRxMsg_FirstMessageMsg %d %d",aSessionIndex,aRxMsg->mHeader.mSourceId);
 
-   //--------------------------------------------------------------
-   // Process message:
-
    // Add session to state list
    mSessionStateList.add(aSessionIndex,aRxMsg->mHeader.mSourceId);
-
-   // Process message:
-   //--------------------------------------------------------------
 
    // Delete the message
    delete aRxMsg;
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // executeOnTimer
 
@@ -182,6 +180,8 @@ void ServerThread::executeOnTimer(int aTimerCount)
    Prn::print(Prn::ThreadRun3, "ServerThread::executeOnTimer %d",mPeriodicCount++);
 }
 
+//******************************************************************************
+//******************************************************************************
 //******************************************************************************
 // Rx message handler - StatusRequestMsg
 
@@ -200,6 +200,8 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::StatusRequestMsg* aRxM
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // Rx message handler - StatusResponseMsg
 
 void ServerThread::processRxMsg(int aSessionIndex,Remote::StatusResponseMsg* aRxMsg)
@@ -209,14 +211,20 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::StatusResponseMsg* aRx
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // This sends a message via the tcp server thread
+
 void ServerThread::sendMsg(int aSessionIndex,Remote::BaseMsg* aTxMsg)
 {
    mTcpServerThread->sendMsg(aSessionIndex,aTxMsg);
 }
 
 //******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // This sends a test message via the tcp client thread
+
 void ServerThread::sendTestMsg(int aAppNumber)
 {
    // Get session index
@@ -230,4 +238,7 @@ void ServerThread::sendTestMsg(int aAppNumber)
    mTcpServerThread->sendMsg(tSessionIndex,msg);
 }
 
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 }//namespace

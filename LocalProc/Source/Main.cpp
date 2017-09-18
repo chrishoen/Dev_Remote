@@ -33,9 +33,9 @@ int main(int argc,char** argv)
    //***************************************************************************
    // Start user command line executive, wait for user to exit.
 
-   CmdLineExec* exec = new CmdLineExec;
-   Ris::gCmdLineConsole.execute(exec);
-   delete exec;
+   CmdLineExec* tExec = new CmdLineExec;
+   Ris::gCmdLineConsole.execute(tExec);
+   delete tExec;
 
    //***************************************************************************
    //***************************************************************************
