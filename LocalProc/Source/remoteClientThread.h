@@ -112,6 +112,20 @@ public:
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
+   // Methods: QCalls: These are used to send commands to the thread.
+
+   // Example test qcall.
+
+   // The qcall. This is a call that is queued to this thread.
+   Ris::Threads::QCall1<int> mTest1QCall;
+
+   // Execute the call in the context of the long thread.
+   void executeTest1(
+      int  aCode);
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
    // Methods.
 
    // QCalls registered to mTcpClientThread
@@ -131,7 +145,6 @@ public:
 
    // Receive message handlers.
    void processRxMsg (Remote::TestMsg* aRxMsg);
-   void processRxMsg (Remote::WorkRequestMsg* aRxMsg);
    void processRxMsg (Remote::WorkResponseMsg* aRxMsg);
 
    //***************************************************************************

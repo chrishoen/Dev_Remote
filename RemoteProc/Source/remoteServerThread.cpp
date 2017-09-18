@@ -90,6 +90,17 @@ void  ServerThread::threadExitFunction()
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+// executeOnTimer
+
+void ServerThread::executeOnTimer(int aTimerCount)
+{
+   return;
+   Prn::print(Prn::ThreadRun3, "ServerThread::executeOnTimer %d",mPeriodicCount++);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // QCall
 
 void ServerThread::executeSession (int aSessionIndex,bool aConnected)
@@ -127,9 +138,6 @@ void ServerThread::executeRxMsg(int aSessionIndex,Ris::ByteContent* aMsg)
          break;
       case Remote::MsgIdT::cWorkRequestMsg :
          processRxMsg(aSessionIndex,(Remote::WorkRequestMsg*)tMsg);
-         break;
-      case Remote::MsgIdT::cWorkResponseMsg :
-         processRxMsg(aSessionIndex,(Remote::WorkResponseMsg*)tMsg);
          break;
       default :
          Prn::print(Prn::ThreadRun1, "ServerThread::processRxMsg %d",tMsg->mMessageType);
@@ -172,17 +180,6 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::FirstMessageMsg* aRxMs
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// executeOnTimer
-
-void ServerThread::executeOnTimer(int aTimerCount)
-{
-   return;
-   Prn::print(Prn::ThreadRun3, "ServerThread::executeOnTimer %d",mPeriodicCount++);
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
 // Rx message handler - WorkRequestMsg
 
 void ServerThread::processRxMsg(int aSessionIndex,Remote::WorkRequestMsg* aRxMsg)
@@ -196,17 +193,6 @@ void ServerThread::processRxMsg(int aSessionIndex,Remote::WorkRequestMsg* aRxMsg
       sendMsg(aSessionIndex,tTxMsg);
    }
 
-   delete aRxMsg;
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// Rx message handler - WorkResponseMsg
-
-void ServerThread::processRxMsg(int aSessionIndex,Remote::WorkResponseMsg* aRxMsg)
-{
-   Prn::print(Prn::ThreadRun2, "ServerThread::processRxMsg_WorkResponseMsg");
    delete aRxMsg;
 }
 

@@ -34,6 +34,7 @@ ClientThread::ClientThread()
    // Initialize QCalls.
    mSessionQCall.bind (this->mShortThread,this,&ClientThread::executeSession);
    mRxMsgQCall.bind   (this->mShortThread,this,&ClientThread::executeRxMsg);
+   mTest1QCall.bind   (this->mLongThread, this,&ClientThread::executeTest1);
 
    // Initialize variables.
    mTcpClientThread = 0;
@@ -98,6 +99,21 @@ void  ClientThread::threadExitFunction()
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+// executeOnTimer
+
+void ClientThread::executeOnTimer(int aTimerCount)
+{
+   if (!mPeriodicEnable) return;
+   Prn::print(Prn::ThreadRun3, "ClientThread::executeOnTimer %d", aTimerCount);
+
+   Remote::WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
+   tMsg->mCode1 = aTimerCount;
+   sendMsg(tMsg);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 // QCall.
 
 void ClientThread::executeSession (bool aConnected)
@@ -138,9 +154,6 @@ void ClientThread::executeRxMsg(Ris::ByteContent* aRxMsg)
       case Remote::MsgIdT::cTestMsg :
          processRxMsg((Remote::TestMsg*)tRxMsg);
          break;
-      case Remote::MsgIdT::cWorkRequestMsg :
-         processRxMsg((Remote::WorkRequestMsg*)tRxMsg);
-         break;
       case Remote::MsgIdT::cWorkResponseMsg :
          processRxMsg((Remote::WorkResponseMsg*)tRxMsg);
          break;
@@ -165,45 +178,15 @@ void ClientThread::processRxMsg(Remote::TestMsg* aRxMsg)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// executeOnTimer
-
-void ClientThread::executeOnTimer(int aTimerCount)
-{
-   if (!mPeriodicEnable) return;
-   Prn::print(Prn::ThreadRun3, "ClientThread::executeOnTimer %d", aTimerCount);
-
-   Remote::WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
-   tMsg->mCode1 = aTimerCount;
-   sendMsg(tMsg);
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// Rx message handler - WorkRequestMsg
-
-void ClientThread::processRxMsg(Remote::WorkRequestMsg* aRxMsg)
-{
-   Prn::print(Prn::ThreadRun2, "ClientThread::processRxMsg_WorkRequestMsg %d",mStatusCount1++);
-
-   if (true)
-   {
-      Remote::WorkResponseMsg* tTxMsg = new Remote::WorkResponseMsg;
-      sendMsg(tTxMsg);
-   }
-
-   delete aRxMsg;
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
 // Rx message handler - WorkResponseMsg
 
 void ClientThread::processRxMsg(Remote::WorkResponseMsg* aRxMsg)
 {
    Prn::print(Prn::ThreadRun2, "ClientThread::processRxMsg_WorkResponseMsg %d",aRxMsg->mCode1);
    delete aRxMsg;
+
+   // Send a notification to the long thread.
+   BaseClass::notify(1);
 }
 
 //******************************************************************************
@@ -229,4 +212,63 @@ void ClientThread::sendTestMsg()
    mTcpClientThread->sendMsg(msg);
 }
 
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Execute the call in the context of the long thread.
+
+void ClientThread::executeTest1(int  aCode)
+{
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Send a work request to the show target thread and wait for a completion
+   // notification.
+
+   try
+   {
+      Prn::print(Prn::ProcRun1, "ClientThread::executeTest1>>>>>>>>>>>>>>>>>>>>>>>>>BEGIN");
+
+      //************************************************************************
+      //************************************************************************
+      //************************************************************************
+      // Locals.
+
+      // Completion notification.
+      Ris::Threads::TwoThreadNotify tNotify(this, 1);
+
+      //************************************************************************
+      //************************************************************************
+      //************************************************************************
+      // Test1.
+
+      // Reset thread notifications.
+      BaseClass::resetNotify();
+
+      // Send a work request message to the server.
+      WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
+      sendMsg(tMsg);
+
+      // Wait for notification from the short thread for when the work 
+      // response is received.
+      BaseClass::waitForNotify(2000,1);
+
+      Prn::print(Prn::ProcRun1, "ClientThread::executeTest1<<<<<<<<<<<<<<<<<<<<<<<<<END");
+   }
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // If the preceding code section encountered a timeout or an abort
+   // then this section executes. 
+
+   catch(int aStatus)
+   {
+      Prn::print(Prn::ProcRun1, "ClientThread::executeTest1.....................ERROR %d",aStatus);
+   }
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
 }//namespace

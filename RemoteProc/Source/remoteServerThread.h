@@ -135,7 +135,6 @@ public:
    void processRxMsg (int aSessionIndex,Remote::TestMsg* aRxMsg);
    void processRxMsg (int aSessionIndex,Remote::FirstMessageMsg* aRxMsg);
    void processRxMsg (int aSessionIndex,Remote::WorkRequestMsg* aRxMsg);
-   void processRxMsg (int aSessionIndex,Remote::WorkResponseMsg* aRxMsg);
 
    //--------------------------------------------------------------
    // Send a message via mTcpServerThread:

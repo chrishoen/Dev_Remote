@@ -29,6 +29,7 @@ void CmdLineExec::execute(Ris::CmdLineCmd* aCmd)
 {
    if(aCmd->isCmd("RESET"  ))  reset();
    if(aCmd->isCmd("Tx"     ))  executeTx(aCmd); 
+   if(aCmd->isCmd("Test1"  ))  executeTest1(aCmd); 
 
    if(aCmd->isCmd("GO1"    ))  executeGo1(aCmd);
    if(aCmd->isCmd("GO2"    ))  executeGo2(aCmd);
@@ -46,8 +47,32 @@ void CmdLineExec::executeTx(Ris::CmdLineCmd* aCmd)
 {
    aCmd->setArgDefault(1,1);
 
-   Remote::TestMsg* tMsg = new Remote::TestMsg;
-   Remote::gClientThread->sendMsg(tMsg);
+   switch (aCmd->argInt(1))
+   {
+   case 1:
+   {
+      Remote::TestMsg* tMsg = new Remote::TestMsg;
+      Remote::gClientThread->sendMsg(tMsg);
+   }
+   break;
+   case 2:
+   {
+      Remote::WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
+      Remote::gClientThread->sendMsg(tMsg);
+   }
+   break;
+   }
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+void CmdLineExec::executeTest1(Ris::CmdLineCmd* aCmd)
+{
+   aCmd->setArgDefault(1,0);
+
+   Remote::gClientThread->mTest1QCall(aCmd->argInt(1));
 }
 
 //******************************************************************************
