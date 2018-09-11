@@ -71,7 +71,7 @@ void ClientThread::threadInitFunction()
    // Configure child thread.
    mTcpClientThread->configure(
       &mMonkeyCreator,
-      "127.0.0.1",
+      gSettings.mTcpServerIPAddress,
       gSettings.mTcpServerPort,
       &mSessionQCall,
       &mRxMsgQCall);

@@ -16,6 +16,7 @@ SectionBegin TcpClient1
    MyAppNumber   201 
    MyAppRole     TcpClient 
    TcpServer     127.0.0.1 55061
+   TcpServer     192.168.16.21 55061
 
 SectionEnd
 
