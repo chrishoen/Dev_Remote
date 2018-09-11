@@ -104,7 +104,7 @@ void  ClientThread::threadExitFunction()
 void ClientThread::executeOnTimer(int aTimerCount)
 {
    if (!mPeriodicEnable) return;
-   Prn::print(Prn::ThreadRun3, "ClientThread::executeOnTimer %d", aTimerCount);
+// Prn::print(Prn::ThreadRun3, "ClientThread::executeOnTimer %d", aTimerCount);
 
    Remote::WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
    tMsg->mCode1 = aTimerCount;

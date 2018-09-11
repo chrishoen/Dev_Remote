@@ -29,7 +29,8 @@ void CmdLineExec::execute(Ris::CmdLineCmd* aCmd)
 {
    if(aCmd->isCmd("RESET"  ))  reset();
    if(aCmd->isCmd("Tx"     ))  executeTx(aCmd); 
-   if(aCmd->isCmd("Test1"  ))  executeTest1(aCmd); 
+   if (aCmd->isCmd("Test1" ))  executeTest1(aCmd);
+   if (aCmd->isCmd("TP"    ))  Remote::gClientThread->mPeriodicEnable = aCmd->argBool(1);
 
    if(aCmd->isCmd("GO1"    ))  executeGo1(aCmd);
    if(aCmd->isCmd("GO2"    ))  executeGo2(aCmd);
@@ -93,6 +94,8 @@ void CmdLineExec::executeGo1(Ris::CmdLineCmd* aCmd)
 
 void CmdLineExec::executeGo2(Ris::CmdLineCmd* aCmd)
 {
+   int* tPtr = 0;
+   *tPtr = 123;
 }
 
 //******************************************************************************

@@ -71,7 +71,7 @@ WorkRequestMsg::WorkRequestMsg ()
    mCode4 = 104;
 
    mNumOfWords=0;
-   mNumOfWords=MaxWords;
+   mNumOfWords=cMaxWords;
 } 
 
 void WorkRequestMsg::copyToFrom (Ris::ByteBuffer* aBuffer)
