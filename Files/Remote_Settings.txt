@@ -6,7 +6,7 @@ SectionBegin TcpServer
 
    MyAppNumber   101 
    MyAppRole     TcpServer 
-   TcpServer     0.0.0.0 55001
+   TcpServer     0.0.0.0 55061
 
 SectionEnd
 
@@ -15,7 +15,7 @@ SectionBegin TcpClient1
 
    MyAppNumber   201 
    MyAppRole     TcpClient 
-   TcpServer     127.0.0.1 55001
+   TcpServer     127.0.0.1 55061
 
 SectionEnd
 
@@ -24,7 +24,7 @@ SectionBegin TcpClient2
 
    MyAppNumber   202 
    MyAppRole     TcpClient 
-   TcpServer     127.0.0.1 55001
+   TcpServer     127.0.0.1 55061
 
 SectionEnd
 
