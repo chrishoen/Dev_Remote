@@ -7,7 +7,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="Source\remoteMsg.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -17,9 +16,11 @@
     <ClCompile Include="Source\remoteSettings.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\stdafx.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h" />
     <ClInclude Include="Source\remoteMsg.h">
       <Filter>Source</Filter>
     </ClInclude>
@@ -27,6 +28,9 @@
       <Filter>Source</Filter>
     </ClInclude>
     <ClInclude Include="Source\remoteSettings.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\stdafx.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

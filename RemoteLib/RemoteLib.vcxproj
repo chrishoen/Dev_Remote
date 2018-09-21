@@ -22,7 +22,7 @@
     <ClCompile Include="Source\remoteMsg.cpp" />
     <ClCompile Include="Source\remoteMsgBase.cpp" />
     <ClCompile Include="Source\remoteSettings.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="Source\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
@@ -31,7 +31,7 @@
     <ClInclude Include="Source\remoteMsg.h" />
     <ClInclude Include="Source\remoteMsgBase.h" />
     <ClInclude Include="Source\remoteSettings.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Source\stdafx.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{3dc4966d-c5cd-42da-b0b9-bea511e0a486}</ProjectGuid>
@@ -107,7 +107,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Alpha\Lib\RisLib\include;C:\Alpha\Lib\DspLib\include;$(ProjectDir)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Alpha\Lib\RisLib\include;C:\Alpha\Lib\DspLib\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996</DisableSpecificWarnings>
     </ClCompile>
     <Link>

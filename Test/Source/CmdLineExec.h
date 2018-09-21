@@ -21,9 +21,6 @@ public:
   void executeGo3(Ris::CmdLineCmd* aCmd);
   void executeGo4(Ris::CmdLineCmd* aCmd);
   void executeGo5(Ris::CmdLineCmd* aCmd);
-
-  double mX;
-  double mT;
 };
 
 //******************************************************************************

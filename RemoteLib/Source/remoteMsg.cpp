@@ -133,9 +133,9 @@ void WorkResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// This creates a new message, based on a message type
+// Create a new message, based on a message type
 
-Ris::ByteContent* MsgCreator::createMsg (int aMessageType)
+void* createMsg (int aMessageType)
 {
    Ris::ByteContent* tMsg = 0;
 
