@@ -23,8 +23,8 @@ void CmdLineExec::reset()
 
 void CmdLineExec::execute(Ris::CmdLineCmd* aCmd)
 {
-   if (aCmd->isCmd("RESET"))  reset();
-   if (aCmd->isCmd("Tx"))     executeTx(aCmd); 
+   if (aCmd->isCmd("TP"))     Remote::gClientThread->mTPFlag = aCmd->argBool(1);
+   if (aCmd->isCmd("Tx"))     executeTx(aCmd);
    if (aCmd->isCmd("ECHO"))   executeEcho(aCmd);
    if (aCmd->isCmd("Test1"))  executeTest1(aCmd);
    if (aCmd->isCmd("GO1"))    executeGo1(aCmd);
@@ -66,7 +66,7 @@ void CmdLineExec::executeEcho(Ris::CmdLineCmd* aCmd)
 
 void CmdLineExec::executeTest1(Ris::CmdLineCmd* aCmd)
 {
-   aCmd->setArgDefault(1,0);
+   aCmd->setArgDefault(1,1000);
 
    Remote::gClientThread->mTest1QCall(aCmd->argInt(1));
 }

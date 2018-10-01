@@ -143,8 +143,8 @@ void ClientThread::executeRxMsg(Ris::ByteContent* aMsg)
       case MsgIdT::cEchoResponseMsg:
          processRxMsg((EchoResponseMsg*)tMsg);
          break;
-      case MsgIdT::cWorkResponseMsg:
-         processRxMsg((WorkResponseMsg*)tMsg);
+      case MsgIdT::cWorkCompletionMsg:
+         processRxMsg((WorkCompletionMsg*)tMsg);
          break;
       default :
          Prn::print(Prn::ThreadRun1, "processRxMsg %d",tMsg->mMessageType);
@@ -196,11 +196,11 @@ void ClientThread::processRxMsg(EchoResponseMsg* aMsg)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - WorkResponseMsg.
+// Rx message handler - WorkCompletionMsg.
 
-void ClientThread::processRxMsg(WorkResponseMsg* aMsg)
+void ClientThread::processRxMsg(WorkCompletionMsg* aMsg)
 {
-   Prn::print(Prn::ThreadRun1, "processRxMsg_WorkResponseMsg %d %d", aMsg->mCode1, aMsg->mNumWords);
+   Prn::print(Prn::ThreadRun1, "processRxMsg_WorkCompletionMsg %d", aMsg->mCode1);
    delete aMsg;
 
    // Send a notification to the long thread.
@@ -252,7 +252,7 @@ void ClientThread::executeOnTimer(int aTimerCount)
 //******************************************************************************
 // Execute the call in the context of the long thread.
 
-void ClientThread::executeTest1(int  aCode)
+void ClientThread::executeTest1(int aCode)
 {
    //***************************************************************************
    //***************************************************************************
@@ -281,6 +281,7 @@ void ClientThread::executeTest1(int  aCode)
 
       // Send a work request message to the server.
       WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
+      tMsg->mNumWords = aCode;
       sendMsg(tMsg);
 
       // Wait for notification from the short thread for when the work 

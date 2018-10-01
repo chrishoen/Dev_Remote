@@ -210,9 +210,8 @@ void ServerThread::processRxMsg(int aSessionIndex, WorkRequestMsg* aMsg)
 {
    Prn::print(Prn::ThreadRun1, "processRxMsg_WorkRequestMsg %d %d", aMsg->mCode1, aMsg->mNumWords);
 
-   WorkResponseMsg* tTxMsg = new WorkResponseMsg;
+   WorkCompletionMsg* tTxMsg = new WorkCompletionMsg;
    tTxMsg->mCode1 = aMsg->mCode1;
-   tTxMsg->mNumWords = aMsg->mNumWords;
    sendMsg(aSessionIndex, tTxMsg);
 
    delete aMsg;

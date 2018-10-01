@@ -163,19 +163,17 @@ void WorkRequestMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 //******************************************************************************
 //******************************************************************************
 
-WorkResponseMsg::WorkResponseMsg()
+WorkCompletionMsg::WorkCompletionMsg()
 {
-   mMessageType = MsgIdT::cWorkResponseMsg;
+   mMessageType = MsgIdT::cWorkCompletionMsg;
 
    mCode1 = 201;
    mCode2 = 202;
    mCode3 = 203;
    mCode4 = 204;
-
-   mNumWords = 0;
 }
 
-void WorkResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
+void WorkCompletionMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 {
    mHeader.headerCopyToFrom(aBuffer, this);
 
@@ -183,12 +181,6 @@ void WorkResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
    aBuffer->copy(&mCode2);
    aBuffer->copy(&mCode3);
    aBuffer->copy(&mCode4);
-
-   aBuffer->copy(&mNumWords);
-   for (int i = 0; i < mNumWords; i++)
-   {
-      aBuffer->copy(&mWords[i]);
-   }
 
    mHeader.headerReCopyToFrom(aBuffer, this);
 }
@@ -222,8 +214,8 @@ void* createMsg (int aMessageType)
    case MsgIdT::cWorkRequestMsg:
       tMsg = new WorkRequestMsg;
       break;
-   case MsgIdT::cWorkResponseMsg:
-      tMsg = new WorkResponseMsg;
+   case MsgIdT::cWorkCompletionMsg:
+      tMsg = new WorkCompletionMsg;
       break;
    default :
       return 0;

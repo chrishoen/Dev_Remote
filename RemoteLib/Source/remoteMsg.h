@@ -43,13 +43,13 @@ class MsgIdT
 {
 public:
 
-   static const int   cUnspecifiedMsg  = 0;
-   static const int   cTestMsg         = 1;
-   static const int   cFirstMessageMsg = 2;
-   static const int   cEchoRequestMsg  = 3;
-   static const int   cEchoResponseMsg = 4;
-   static const int   cWorkRequestMsg  = 5;
-   static const int   cWorkResponseMsg = 6;
+   static const int   cUnspecifiedMsg    = 0;
+   static const int   cTestMsg           = 1;
+   static const int   cFirstMessageMsg   = 2;
+   static const int   cEchoRequestMsg    = 3;
+   static const int   cEchoResponseMsg   = 4;
+   static const int   cWorkRequestMsg    = 5;
+   static const int   cWorkCompletionMsg = 6;
 
 };
 
@@ -203,7 +203,7 @@ public:
 //******************************************************************************
 //******************************************************************************
 
-class WorkResponseMsg : public BaseMsg
+class WorkCompletionMsg : public BaseMsg
 {
 public:
 
@@ -217,16 +217,12 @@ public:
    int   mCode3;
    int   mCode4;
 
-   static const int cMaxWords = 10000;
-   int   mNumWords;
-   int   mWords[cMaxWords];
-
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
    // Methods.
 
-   WorkResponseMsg();
+   WorkCompletionMsg();
    void copyToFrom(Ris::ByteBuffer* aBuffer);
 };
 

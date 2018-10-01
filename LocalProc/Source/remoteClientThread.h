@@ -156,7 +156,7 @@ public:
    void processRxMsg(TestMsg* aMsg);
    void processRxMsg(EchoRequestMsg* aMsg);
    void processRxMsg(EchoResponseMsg* aMsg);
-   void processRxMsg(WorkResponseMsg* aMsg);
+   void processRxMsg(WorkCompletionMsg* aMsg);
 
    //***************************************************************************
    //***************************************************************************
