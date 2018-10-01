@@ -71,7 +71,6 @@ EchoRequestMsg::EchoRequestMsg()
    mCode4 = 104;
 
    mNumWords = 0;
-   mNumWords = MaxWords;
 }
 
 void EchoRequestMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
@@ -106,7 +105,6 @@ EchoResponseMsg::EchoResponseMsg()
    mCode4 = 204;
 
    mNumWords = 0;
-   mNumWords = MaxWords;
 }
 
 void EchoResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
@@ -141,7 +139,6 @@ WorkRequestMsg::WorkRequestMsg()
    mCode4 = 104;
 
    mNumWords = 0;
-   mNumWords = MaxWords;
 }
 
 void WorkRequestMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
@@ -176,7 +173,6 @@ WorkResponseMsg::WorkResponseMsg()
    mCode4 = 204;
 
    mNumWords = 0;
-   mNumWords = MaxWords;
 }
 
 void WorkResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)

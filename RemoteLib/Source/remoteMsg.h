@@ -124,9 +124,9 @@ public:
    int    mCode3;
    int    mCode4;
 
-   enum { MaxWords = 1000 };
+   static const int cMaxWords = 10000;
    int  mNumWords;
-   int  mWords[MaxWords];
+   int  mWords[cMaxWords];
 
    //***************************************************************************
    //***************************************************************************
@@ -155,9 +155,9 @@ public:
    int   mCode3;
    int   mCode4;
 
-   enum { MaxWords = 1000 };
+   static const int cMaxWords = 10000;
    int   mNumWords;
-   int   mWords[MaxWords];
+   int   mWords[cMaxWords];
 
    //***************************************************************************
    //***************************************************************************
@@ -186,9 +186,9 @@ public:
    int    mCode3;
    int    mCode4;
 
-   enum { MaxWords = 1000 };
+   static const int cMaxWords = 10000;
    int  mNumWords;
-   int  mWords[MaxWords];
+   int  mWords[cMaxWords];
 
    //***************************************************************************
    //***************************************************************************
@@ -217,9 +217,9 @@ public:
    int   mCode3;
    int   mCode4;
 
-   enum { MaxWords = 1000 };
+   static const int cMaxWords = 10000;
    int   mNumWords;
-   int   mWords[MaxWords];
+   int   mWords[cMaxWords];
 
    //***************************************************************************
    //***************************************************************************
