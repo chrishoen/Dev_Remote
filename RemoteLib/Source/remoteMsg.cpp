@@ -61,7 +61,77 @@ void FirstMessageMsg::copyToFrom (Ris::ByteBuffer* aBuffer)
 //******************************************************************************
 //******************************************************************************
 
-WorkRequestMsg::WorkRequestMsg ()
+EchoRequestMsg::EchoRequestMsg()
+{
+   mMessageType = MsgIdT::cEchoRequestMsg;
+
+   mCode1 = 101;
+   mCode2 = 102;
+   mCode3 = 103;
+   mCode4 = 104;
+
+   mNumWords = 0;
+   mNumWords = MaxWords;
+}
+
+void EchoRequestMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
+{
+   mHeader.headerCopyToFrom(aBuffer, this);
+
+   aBuffer->copy(&mCode1);
+   aBuffer->copy(&mCode2);
+   aBuffer->copy(&mCode3);
+   aBuffer->copy(&mCode4);
+
+   aBuffer->copy(&mNumWords);
+   for (int i = 0; i < mNumWords; i++)
+   {
+      aBuffer->copy(&mWords[i]);
+   }
+
+   mHeader.headerReCopyToFrom(aBuffer, this);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+EchoResponseMsg::EchoResponseMsg()
+{
+   mMessageType = MsgIdT::cEchoResponseMsg;
+
+   mCode1 = 201;
+   mCode2 = 202;
+   mCode3 = 203;
+   mCode4 = 204;
+
+   mNumWords = 0;
+   mNumWords = MaxWords;
+}
+
+void EchoResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
+{
+   mHeader.headerCopyToFrom(aBuffer, this);
+
+   aBuffer->copy(&mCode1);
+   aBuffer->copy(&mCode2);
+   aBuffer->copy(&mCode3);
+   aBuffer->copy(&mCode4);
+
+   aBuffer->copy(&mNumWords);
+   for (int i = 0; i < mNumWords; i++)
+   {
+      aBuffer->copy(&mWords[i]);
+   }
+
+   mHeader.headerReCopyToFrom(aBuffer, this);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+WorkRequestMsg::WorkRequestMsg()
 {
    mMessageType = MsgIdT::cWorkRequestMsg;
 
@@ -70,26 +140,26 @@ WorkRequestMsg::WorkRequestMsg ()
    mCode3 = 103;
    mCode4 = 104;
 
-   mNumOfWords=0;
-   mNumOfWords=MaxWords;
-} 
+   mNumWords = 0;
+   mNumWords = MaxWords;
+}
 
-void WorkRequestMsg::copyToFrom (Ris::ByteBuffer* aBuffer)
+void WorkRequestMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 {
-   mHeader.headerCopyToFrom(aBuffer,this);
+   mHeader.headerCopyToFrom(aBuffer, this);
 
-   aBuffer->copy        (& mCode1  );
-   aBuffer->copy        (& mCode2  );
-   aBuffer->copy        (& mCode3  );
-   aBuffer->copy        (& mCode4  );
+   aBuffer->copy(&mCode1);
+   aBuffer->copy(&mCode2);
+   aBuffer->copy(&mCode3);
+   aBuffer->copy(&mCode4);
 
-   aBuffer->copy        (& mNumOfWords  );
-   for (int i=0;i<mNumOfWords;i++)
+   aBuffer->copy(&mNumWords);
+   for (int i = 0; i < mNumWords; i++)
    {
-      aBuffer->copy     (& mWords[i] );
+      aBuffer->copy(&mWords[i]);
    }
 
-   mHeader.headerReCopyToFrom(aBuffer,this);
+   mHeader.headerReCopyToFrom(aBuffer, this);
 }
 
 //******************************************************************************
@@ -105,8 +175,8 @@ WorkResponseMsg::WorkResponseMsg()
    mCode3 = 203;
    mCode4 = 204;
 
-   mNumOfWords = 0;
-   mNumOfWords = MaxWords;
+   mNumWords = 0;
+   mNumWords = MaxWords;
 }
 
 void WorkResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
@@ -118,8 +188,8 @@ void WorkResponseMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
    aBuffer->copy(&mCode3);
    aBuffer->copy(&mCode4);
 
-   aBuffer->copy(&mNumOfWords);
-   for (int i = 0; i<mNumOfWords; i++)
+   aBuffer->copy(&mNumWords);
+   for (int i = 0; i < mNumWords; i++)
    {
       aBuffer->copy(&mWords[i]);
    }
@@ -147,10 +217,16 @@ void* createMsg (int aMessageType)
    case MsgIdT::cFirstMessageMsg :
       tMsg = new FirstMessageMsg;
       break;
-   case MsgIdT::cWorkRequestMsg :
+   case MsgIdT::cEchoRequestMsg:
+      tMsg = new EchoRequestMsg;
+      break;
+   case MsgIdT::cEchoResponseMsg:
+      tMsg = new EchoResponseMsg;
+      break;
+   case MsgIdT::cWorkRequestMsg:
       tMsg = new WorkRequestMsg;
       break;
-   case MsgIdT::cWorkResponseMsg :
+   case MsgIdT::cWorkResponseMsg:
       tMsg = new WorkResponseMsg;
       break;
    default :

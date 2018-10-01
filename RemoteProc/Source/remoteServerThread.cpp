@@ -1,5 +1,4 @@
 /*==============================================================================
-ServerThread.cpp
 ==============================================================================*/
 
 //******************************************************************************
@@ -22,91 +21,80 @@ namespace Remote
 
 ServerThread::ServerThread()
 {
-   // Initialize base class variables.
+   // Set base class thread priority.
    BaseClass::setThreadPriorityHigh();
+
+   // Set base class timer period.
    BaseClass::mTimerPeriod = 1000;
 
-   // Initialize variables.
-   mPeriodicEnable=false;
-   mPeriodicCount=0;
-   mStatusCount1=0;
-   mStatusCount2=0;
-
-   mTcpServerThread  = 0;
-
    // Initialize qcalls.
-   mSessionQCall.bind (this,&ServerThread::executeSession);
-   mRxMsgQCall.bind   (this,&ServerThread::executeRxMsg);
+   mSessionQCall.bind(this, &ServerThread::executeSession);
+   mRxMsgQCall.bind(this,   &ServerThread::executeRxMsg);
+
+   // Initialize variables.
+   mTcpMsgServerThread = 0;
+   mMonkeyCreator.configure(gSettings.mMyAppNumber);
+   mTPFlag = false;
+   mStatusCount1 = 0;
+   mStatusCount2 = 0;
 }
 
 ServerThread::~ServerThread()
 {
-   delete mTcpServerThread;
+   delete mTcpMsgServerThread;
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
+// Thread init function. This is called by the base class immediately 
+// after the thread starts running. It starts the child thread.
 
 void ServerThread::threadInitFunction()
 {
    Prn::print(Prn::ThreadInit1, "ServerThread::threadInitFunction");
 
-   // Configure message monkey.
-   mMonkeyCreator.configure(gSettings.mMyAppNumber);
+   // Instance of network socket settings.
+   Ris::Net::Settings tSettings;
 
-   // Create server socket child thread.
-   mTcpServerThread  = new Ris::Net::TcpMsgServerThread;
+   tSettings.setLocalIp(gSettings.mTcpServerIPAddress, gSettings.mTcpServerPort);
+   tSettings.mMonkeyCreator = &mMonkeyCreator;
+   tSettings.mMaxSessions = gSettings.mTcpMaxSessions;
+   tSettings.mServerSessionQCall = mSessionQCall;
+   tSettings.mServerRxMsgQCall = mRxMsgQCall;
 
-   // Create server socket child thread.
-   mTcpServerThread->configure(
-      &mMonkeyCreator,
-      "0.0.0.0",
-      gSettings.mTcpServerPort,
-      MaxSessions,
-      &mSessionQCall,
-      &mRxMsgQCall);
+   // Create the child thread with the settings.
+   mTcpMsgServerThread = new Ris::Net::TcpMsgServerThread(tSettings);
 
-   // Launch server socket child thread.
-   mTcpServerThread->launchThread(); 
+   // Launch the child thread.
+   mTcpMsgServerThread->launchThread();
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Thread exit function, base class overload.
+// Thread exit function. This is called by the base class immediately
+// before the thread is terminated. It shuts down the child thread.
 
 void  ServerThread::threadExitFunction()
 {
    Prn::print(Prn::ThreadInit1, "ServerThread::threadExitFunction");
 
-   // Shutdown child thread
-   mTcpServerThread->shutdownThread(); 
-
-   // Base class exit
-   BaseClass::threadExitFunction();
+   // Shutdown the child thread.
+   mTcpMsgServerThread->shutdownThread(); 
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// executeOnTimer
-
-void ServerThread::executeOnTimer(int aTimerCount)
-{
-   return;
-   Prn::print(Prn::ThreadRun3, "ServerThread::executeOnTimer %d",mPeriodicCount++);
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// QCall
+// QCall registered to the mTcpMsgThread child thread. It is invoked when
+// a session is established or disestablished (when a client connects or
+// disconnects). It maintains session state variables.
 
 void ServerThread::executeSession (int aSessionIndex,bool aConnected)
-{
-   if (aConnected) Prn::print(Prn::ThreadRun1, "ServerThread CLIENT  CONNECTED     %d",aSessionIndex);
-   else            Prn::print(Prn::ThreadRun1, "ServerThread CLIENT  DISCONNECTED  %d",aSessionIndex);
+{                                                            
+   if (aConnected) Prn::print(Prn::ThreadRun1, "ServerThread CONNECTED     %d",aSessionIndex);
+   else            Prn::print(Prn::ThreadRun1, "ServerThread DISCONNECTED  %d",aSessionIndex);
 
    if(!aConnected)
    {
@@ -118,26 +106,34 @@ void ServerThread::executeSession (int aSessionIndex,bool aConnected)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// QCall
+// QCall registered to the mTcpMsgThread child thread. It is invoked when
+// a message is received. It process the received messages. It calls one of
+// the specific receive message handlers.
+
 void ServerThread::executeRxMsg(int aSessionIndex,Ris::ByteContent* aMsg)
 {
    if(!aMsg) return;
 
-   // Put the message to the message processor
-   Remote::BaseMsg* tMsg = (Remote::BaseMsg*)aMsg;
+   BaseMsg* tMsg = (BaseMsg*)aMsg;
 
    // Message jump table based on message type.
    // Calls corresponding specfic message handler method.
    switch (tMsg->mMessageType)
    {
-      case Remote::MsgIdT::cTestMsg :
-         processRxMsg(aSessionIndex,(Remote::TestMsg*)tMsg);
+      case MsgIdT::cTestMsg :
+         processRxMsg(aSessionIndex,(TestMsg*)tMsg);
          break;
-      case Remote::MsgIdT::cFirstMessageMsg :
-         processRxMsg(aSessionIndex,(Remote::FirstMessageMsg*)tMsg);
+      case MsgIdT::cFirstMessageMsg :
+         processRxMsg(aSessionIndex,(FirstMessageMsg*)tMsg);
          break;
-      case Remote::MsgIdT::cWorkRequestMsg :
-         processRxMsg(aSessionIndex,(Remote::WorkRequestMsg*)tMsg);
+      case MsgIdT::cEchoRequestMsg:
+         processRxMsg(aSessionIndex, (EchoRequestMsg*)tMsg);
+         break;
+      case MsgIdT::cEchoResponseMsg:
+         processRxMsg(aSessionIndex, (EchoResponseMsg*)tMsg);
+         break;
+      case MsgIdT::cWorkRequestMsg:
+         processRxMsg(aSessionIndex, (WorkRequestMsg*)tMsg);
          break;
       default :
          Prn::print(Prn::ThreadRun1, "ServerThread::processRxMsg %d",tMsg->mMessageType);
@@ -149,79 +145,122 @@ void ServerThread::executeRxMsg(int aSessionIndex,Ris::ByteContent* aMsg)
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - TestMsg
+// Rx message handler - TestMsg.
 
-void ServerThread::processRxMsg(int aSessionIndex,Remote::TestMsg* aRxMsg)
+void ServerThread::processRxMsg(int aSessionIndex,TestMsg* aMsg)
 {
-   Prn::print(Prn::ThreadRun1, "ServerThread::processRxMsg_TestMsg");
-   delete aRxMsg;
+   Prn::print(Prn::ThreadRun1, "processRxMsg_TestMsg");
+   delete aMsg;
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - FirstMessageMsg
+// Rx message handler - FirstMessageMsg.
 //
 // Specfic message handler for a FirstMessage. It adds the session to the 
 // session state list. This message is sent by the client when a connection
 // is established.
 
-void ServerThread::processRxMsg(int aSessionIndex,Remote::FirstMessageMsg* aRxMsg)
+void ServerThread::processRxMsg(int aSessionIndex,FirstMessageMsg* aMsg)
 {
-   Prn::print(Prn::ThreadRun1, "ServerThread::processRxMsg_FirstMessageMsg %d %d",aSessionIndex,aRxMsg->mHeader.mSourceId);
+   Prn::print(Prn::ThreadRun1, "processRxMsg_FirstMessageMsg %d %d",aSessionIndex,aMsg->mHeader.mSourceId);
 
-   // Add session to state list
-   mSessionStateList.add(aSessionIndex,aRxMsg->mHeader.mSourceId);
+   // Add session to state list.
+   mSessionStateList.add(aSessionIndex,aMsg->mHeader.mSourceId);
 
    // Delete the message
-   delete aRxMsg;
+   delete aMsg;
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Rx message handler - WorkRequestMsg
+// Rx message handler - EchoRequestMsg.
 
-void ServerThread::processRxMsg(int aSessionIndex,Remote::WorkRequestMsg* aRxMsg)
+void ServerThread::processRxMsg(int aSessionIndex, EchoRequestMsg* aMsg)
 {
-   Prn::print(Prn::ThreadRun2, "ServerThread::processRxMsg_WorkRequestMsg %d",aRxMsg->mCode1);
+   Prn::print(Prn::ThreadRun1, "processRxMsg_EchoRequestMsg %d %d", aMsg->mCode1, aMsg->mNumWords);
 
-   if (true)
-   {
-      Remote::WorkResponseMsg* tTxMsg = new Remote::WorkResponseMsg;
-      tTxMsg->mCode1 = aRxMsg->mCode1;
-      sendMsg(aSessionIndex,tTxMsg);
-   }
+   EchoResponseMsg* tTxMsg = new EchoResponseMsg;
+   tTxMsg->mCode1 = aMsg->mCode1;
+   tTxMsg->mNumWords = aMsg->mNumWords;
+   sendMsg(aSessionIndex, tTxMsg);
 
-   delete aRxMsg;
+   delete aMsg;
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// This sends a message via the tcp server thread
+// Rx message handler - EchoResponseMsg.
 
-void ServerThread::sendMsg(int aSessionIndex,Remote::BaseMsg* aTxMsg)
+void ServerThread::processRxMsg(int aSessionIndex, EchoResponseMsg* aMsg)
 {
-   mTcpServerThread->sendMsg(aSessionIndex,aTxMsg);
+   Prn::print(Prn::ThreadRun1, "processRxMsg_EchoResponseMsg %d %d", aMsg->mCode1, aMsg->mNumWords);
+   delete aMsg;
 }
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// This sends a test message via the tcp client thread
+// Rx message handler - WorkRequestMsg.
+
+void ServerThread::processRxMsg(int aSessionIndex, WorkRequestMsg* aMsg)
+{
+   Prn::print(Prn::ThreadRun1, "processRxMsg_WorkRequestMsg %d %d", aMsg->mCode1, aMsg->mNumWords);
+
+   WorkResponseMsg* tTxMsg = new WorkResponseMsg;
+   tTxMsg->mCode1 = aMsg->mCode1;
+   tTxMsg->mNumWords = aMsg->mNumWords;
+   sendMsg(aSessionIndex, tTxMsg);
+
+   delete aMsg;
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Send a message via the child thread.
+
+void ServerThread::sendMsg(int aSessionIndex,BaseMsg* aMsg)
+{
+   // Send a message on socket at the session index.
+   mTcpMsgServerThread->sendMsg(aSessionIndex,aMsg);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Send a message via the child thread.
 
 void ServerThread::sendTestMsg(int aAppNumber)
 {
-   // Get session index
+   // Get the session index associated with the application number.
    int tSessionIndex = mSessionStateList.getIndex(aAppNumber);
-   if (tSessionIndex == Ris::Net::SessionStateList::InvalidValue) return;
+   if (tSessionIndex == Ris::Net::SessionStateList::cInvalidValue) return;
 
-   // Send message on socket at the session index
-   Remote::TestMsg* msg = new Remote::TestMsg;
-   msg->mCode1=201;
+   // Send a message on socket at the session index.
+   TestMsg* tMsg = new TestMsg;
+   tMsg->mCode1=201;
 
-   mTcpServerThread->sendMsg(tSessionIndex,msg);
+   mTcpMsgServerThread->sendMsg(tSessionIndex,tMsg);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+// Execute periodically. This is called by the base class timer. It
+// sends an work request message.
+
+void ServerThread::executeOnTimer(int aTimerCount)
+{
+   if (!mTPFlag) return;
+
+   // Send an echo request message.
+   EchoRequestMsg* tMsg = new EchoRequestMsg;
+   tMsg->mCode1 = aTimerCount;
+   sendMsg(0,tMsg);
 }
 
 //******************************************************************************

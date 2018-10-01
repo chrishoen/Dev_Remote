@@ -5,9 +5,10 @@
 #include "stdafx.h"
 
 #include "risCmdLineFile.h"
+#include "risPortableCalls.h"
 
 
-#define  _PROCOSETTINGS_CPP_
+#define  _REMOTESETTINGS_CPP_
 #include "remoteSettings.h"
 
 //******************************************************************************
@@ -17,9 +18,6 @@
 namespace Remote
 {
 
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
@@ -36,10 +34,10 @@ void Settings::reset()
    strcpy(BaseClass::mDefaultFileName, "Remote_Settings.txt");
 
    mMyAppNumber = 0;
-   mMyAppRole = 0;
 
    mTcpServerIPAddress[0]=0;
    mTcpServerPort = 0;
+   mTcpMaxSessions = 0;
 }
 
 //******************************************************************************
@@ -52,10 +50,13 @@ void Settings::show()
    printf("\n");
    printf("Settings************************************************ %s\n", mTargetSection);
 
-   printf("MyAppNumber          %3d\n", mMyAppNumber);
-   printf("MyAppRole            %5s\n", asStringAppRole(mMyAppRole));
+   printf("MyAppNumber             %16d\n",       mMyAppNumber);
 
-   printf("TcpServer            %-12s   %5d\n",mTcpServerIPAddress,mTcpServerPort);
+   printf("TcpServer               %16s : %5d\n", mTcpServerIPAddress, mTcpServerPort);
+   printf("TcpMaxSessions          %16d\n",       mTcpMaxSessions);
+
+   printf("Settings************************************************\n");
+   printf("\n");
 }
 
 //******************************************************************************
@@ -71,17 +72,13 @@ void Settings::execute(Ris::CmdLineCmd* aCmd)
 
    if (aCmd->isCmd("MyAppNumber"))   mMyAppNumber = aCmd->argInt(1);
 
-   if (aCmd->isCmd("MyAppRole"))
-   {
-      if (aCmd->isArgString(1,asStringAppRole(cTcpServer)))   mMyAppRole = cTcpServer;
-      if (aCmd->isArgString(1,asStringAppRole(cTcpClient)))   mMyAppRole = cTcpClient;
-   }
-
    if (aCmd->isCmd("TcpServer"))
    {
       aCmd->copyArgString(1, mTcpServerIPAddress,cMaxStringSize);
       mTcpServerPort = aCmd->argInt(2);
    }
+
+   if (aCmd->isCmd("TcpMaxSessions")) mTcpMaxSessions = aCmd->argInt(1);
 }
 
 //******************************************************************************
@@ -93,25 +90,6 @@ void Settings::execute(Ris::CmdLineCmd* aCmd)
 void Settings::expand()
 {
 }
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-
-char* Settings::asStringAppRole(int aX)
-{
-   switch (aX)
-   {
-   case cNone              : return "None";
-   case cTcpServer         : return "TcpServer";
-   case cTcpClient         : return "TcpClient";
-   default : return "UNKNOWN";
-   }
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
 
 //******************************************************************************
 //******************************************************************************

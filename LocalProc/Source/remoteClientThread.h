@@ -1,21 +1,17 @@
 #pragma once
 
 /*==============================================================================
-Remote client thread class.
+Prototype tcp client thread message thread.
 ==============================================================================*/
 
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
 
-#include "risThreadsTwoThread.h"
 #include "risNetTcpMsgClientThread.h"
+#include "risThreadsTwoThread.h"
 
 #include "remoteMsg.h"
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
 
 namespace Remote
 {
@@ -23,49 +19,49 @@ namespace Remote
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-// Client Thread.
+// This is a tcp client message thread that connects to a tcp server message
+// thread via a tcp client message child thread which manages a tcp message
+// socket. It then communicates byte content messages with the server.
 //
-// This is the client thread class. It inherits from BaseQCallThread to
-// obtain a call queue based thread functionality.
+// It provides the capability to establish a tcp connection with the tcp
+// server via the child thread. When the child thread connects or disconnects
+// to the server it invokes a qcall that was registered by this thread to defer 
+// execution of a session notification handler.
 //
-// The client thread acts in conjunction with the client message processor
-// object. It passes received messages to the processor and gets back messages
-// to transmit from the processor. The client thread provides the execution
-// context for the message processor to process the messages.
+// It provides the capability to send messages via the child thread socket and
+// it provides handlers for messages received via the child thread socket.
+// When the child thread receives a message it invokes a qcall that was
+// registered by this thread to defer execution of a message handler that is 
+// a member of this thread.
 // 
-// The client thread has a member, mTcpClientThread that is an instance of
-// Ris::Net::TcpClientThreadWithQCall. It is a child thread that manages
-// connection session changes and receives messages as a Tcp client. So, there
-// are two threads structured as two layers: The client thread and its member
-// child thread mTcpClientThread.
-//
-// The client thread is based on a call queue and it uses QCalls to interface
-// its mTcpClientThread. When mTcpClientThread detects a session change it
-// invokes the client thread's mSessionQCall, which defers execution of its
-// executeSession member function. Likewise, when mTcpClientThread receives
-// a message it invokes the client thread's mRxMsgQCall, which defers 
-// execution of its executeRxMsg member function. 
-//
-// mTcpClientThread provides the execution context for actually managing
-// session changes and receiving messages. The session thread the provides
-// the execution context for processing the session changes and the received 
-// messages. The processing is done by the message processor object.
-//
+// It inherits from BaseTwoThread to obtain a call queue based thread
+// functionality.
+// 
+// It uses the short thread to manage the message communications and it uses
+// the long thread to send a request to the server and then wait for a
+// response.
 
-class  ClientThread : public Ris::Threads::BaseTwoThread
+class ClientThread : public Ris::Threads::BaseTwoThread
 {
 public:
+   typedef Ris::Threads::BaseTwoThread BaseClass;
 
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
    // Members.
 
-   // Tcp client thread, this manages session connections and  message
-   // transmission and reception.
-   Ris::Net::TcpMsgClientThread*  mTcpClientThread;
+   // Tcp client thread, this manages session connections and message
+   // transmission and reception via a tcp message socket.
 
-   // Message monkey used by mTcpClientThread.
+
+   // Tcp client message socket child thread. It provides the thread execution
+   // context for a tcp message socket and uses it to provide message
+   // communication. It interfaces to this thread via the session and receive
+   // message qcall callbacks.
+   Ris::Net::TcpMsgClientThread* mTcpMsgClientThread;
+
+   // Message monkey creator used by mTcpClientThread.
    Remote::MsgMonkeyCreator mMonkeyCreator;
 
    //***************************************************************************
@@ -76,8 +72,10 @@ public:
    // This indicates if a server connection is valid.
    bool mConnectionFlag;
 
-   // State variables.
-   bool mPeriodicEnable;
+   // Control variables.
+   bool mTPFlag;
+
+   // Metrics.
    int  mPeriodicCount;
    int  mStatusCount1;
    int  mStatusCount2;
@@ -85,77 +83,89 @@ public:
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
-   // Infrastructure.
-
-   typedef Ris::Threads::BaseTwoThread BaseClass;
+   // Methods.
 
    // Constructor.
    ClientThread();
-  ~ClientThread();
+   ~ClientThread();
 
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
-   // Thread base class overloads.
+   // Methods. Thread base class overloads:
 
-   // Thread init function. This is called by the base class immedidately 
-   // after the thread starts running.
+   // Thread init function. This is called by the base class immediately 
+   // after the thread starts running. It starts the child thread.
    void threadInitFunction() override;
 
-   // Thread exit function. This is called by the base class immedidately
-   // before the thread is terminated.
+   // Thread exit function. This is called by the base class immediately
+   // before the thread is terminated. It shuts down the child thread.
    void threadExitFunction() override;
 
-   // Execute periodically. This is called by the base class timer.
+   // Execute periodically. This is called by the base class timer. It
+   // sends an echo request message.
    void executeOnTimer(int aTimerCount) override;
 
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
-   // Methods: QCalls: These are used to send commands to the thread.
+   // Methods. Test1 qcall.
 
-   // Example test qcall.
-
-   // The qcall. This is a call that is queued to this thread.
+   // qcall used for testing. This is a call that is queued to this thread.
+   // It is invoked by some other thread to request that this thread
+   // performs a transaction with the server.
    Ris::Threads::QCall1<int> mTest1QCall;
 
-   // Execute the call in the context of the long thread.
-   void executeTest1(
-      int  aCode);
+   // Send a work request message to the server and then wait for a work 
+   // response message from the server. This is bound to the qcall.
+   void executeTest1(int  aCode);
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods. Session qcall.
+
+   // qcall registered to the mTcpMsgThread child thread. It is invoked when
+   // a session is established or disestablished (when this client connects or
+   // disconnects to the server). 
+   Ris::Net::TcpMsgClientThread::SessionQCall mSessionQCall;
+
+   // Maintain session state variables. When a connection is established it
+   // sends a FirstMessage to the server to inform it of it's identity. This
+   // is bound to the qcall.
+   void executeSession(bool aConnected);
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods. Receive message qcall.
+
+   // qcall registered to the mTcpMsgThread child thread. It is invoked when
+   // a message is received. It process the received messages.
+   Ris::Net::TcpMsgClientThread::RxMsgQCall mRxMsgQCall;
+
+   // Call one of the specific receive message handlers. This is bound to the
+   // qcall.
+   void executeRxMsg(Ris::ByteContent* aMsg);
+
+   //***************************************************************************
+   //***************************************************************************
+   //***************************************************************************
+   // Methods. Specific receive message handlers.
+
+   void processRxMsg(TestMsg* aMsg);
+   void processRxMsg(EchoRequestMsg* aMsg);
+   void processRxMsg(EchoResponseMsg* aMsg);
+   void processRxMsg(WorkResponseMsg* aMsg);
 
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
    // Methods.
 
-   // QCalls registered to mTcpClientThread
-   Ris::Net::TcpMsgClientThread::SessionQCall  mSessionQCall;
-   Ris::Net::TcpMsgClientThread::RxMsgQCall    mRxMsgQCall;
-
-   // Associated QCall methods, these are called by the
-   // threadRunFunction to process conditions sent from 
-   // mTcpServerThread.
-   void executeSession (bool aConnected);
-   void executeRxMsg   (Ris::ByteContent* aRxMsg);
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Methods.
-
-   // Receive message handlers.
-   void processRxMsg (Remote::TestMsg* aRxMsg);
-   void processRxMsg (Remote::WorkResponseMsg* aRxMsg);
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Methods.
-
-   // Send a message via mTcpClientThread:
-   void sendMsg (Remote::BaseMsg* aTxMsg);
-   void sendTestMsg();   
-
+   // Send a message via the child thread.
+   void sendMsg(Remote::BaseMsg* aMsg);
+   void sendTestMsg();
 };
 
 //******************************************************************************

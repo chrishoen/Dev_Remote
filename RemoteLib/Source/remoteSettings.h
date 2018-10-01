@@ -56,25 +56,22 @@ public:
    //***************************************************************************
    // Constants.
 
-   // Communications node type.
-   static const int cNone       = 0;
-   static const int cTcpServer  = 1;
-   static const int cTcpClient  = 2;
-
    static const int cMaxStringSize = 30;
 
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
-   // Members that are read from the parms file.
+   // Members. Read from the parameters file.
 
    // Application settings.
    int  mMyAppNumber;
-   int  mMyAppRole;
 
    // TCP server address and port.
    char mTcpServerIPAddress[cMaxStringSize];
    int  mTcpServerPort;
+
+   // Maximum number of sessions.
+   int  mTcpMaxSessions;
 
    //***************************************************************************
    //***************************************************************************
@@ -84,7 +81,7 @@ public:
    //***************************************************************************
    //***************************************************************************
    //***************************************************************************
-   // Infrastucture.
+   // Methods.
 
    // Constructor,
    typedef Ris::BaseCmdLineParms BaseClass;
@@ -100,14 +97,6 @@ public:
    // Calculate expanded member variables. This is called after the entire
    // section of the command file has been processed.
    void expand() override;
-
-   //***************************************************************************
-   //***************************************************************************
-   //***************************************************************************
-   // Helpers.
-
-   static char* asStringAppRole (int aX);
-
 };
 
 //******************************************************************************
@@ -115,7 +104,7 @@ public:
 //******************************************************************************
 // Global instance.
 
-#ifdef _PROCOSETTINGS_CPP_
+#ifdef _REMOTESETTINGS_CPP_
    Settings gSettings;
 #else
    extern Settings gSettings;

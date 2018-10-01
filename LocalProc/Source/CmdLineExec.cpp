@@ -13,10 +13,6 @@ CmdLineExec::CmdLineExec()
 {
 }
 
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-
 void CmdLineExec::reset()
 {
 }
@@ -27,16 +23,16 @@ void CmdLineExec::reset()
 
 void CmdLineExec::execute(Ris::CmdLineCmd* aCmd)
 {
-   if(aCmd->isCmd("RESET"  ))  reset();
-   if(aCmd->isCmd("Tx"     ))  executeTx(aCmd); 
-   if(aCmd->isCmd("Test1"  ))  executeTest1(aCmd); 
-
-   if(aCmd->isCmd("GO1"    ))  executeGo1(aCmd);
-   if(aCmd->isCmd("GO2"    ))  executeGo2(aCmd);
-   if(aCmd->isCmd("GO3"    ))  executeGo3(aCmd);
-   if(aCmd->isCmd("GO4"    ))  executeGo4(aCmd);
-   if(aCmd->isCmd("GO5"    ))  executeGo5(aCmd);
-   if(aCmd->isCmd("Parms"  ))  executeParms(aCmd);
+   if (aCmd->isCmd("RESET"))  reset();
+   if (aCmd->isCmd("Tx"))     executeTx(aCmd); 
+   if (aCmd->isCmd("ECHO"))   executeEcho(aCmd);
+   if (aCmd->isCmd("Test1"))  executeTest1(aCmd);
+   if (aCmd->isCmd("GO1"))    executeGo1(aCmd);
+   if (aCmd->isCmd("GO2"))    executeGo2(aCmd);
+   if (aCmd->isCmd("GO3"))    executeGo3(aCmd);
+   if (aCmd->isCmd("GO4"))    executeGo4(aCmd);
+   if (aCmd->isCmd("GO5"))    executeGo5(aCmd);
+   if (aCmd->isCmd("Parms"))  executeParms(aCmd);
 }
 
 //******************************************************************************
@@ -47,21 +43,21 @@ void CmdLineExec::executeTx(Ris::CmdLineCmd* aCmd)
 {
    aCmd->setArgDefault(1,1);
 
-   switch (aCmd->argInt(1))
-   {
-   case 1:
-   {
-      Remote::TestMsg* tMsg = new Remote::TestMsg;
-      Remote::gClientThread->sendMsg(tMsg);
-   }
-   break;
-   case 2:
-   {
-      Remote::WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
-      Remote::gClientThread->sendMsg(tMsg);
-   }
-   break;
-   }
+   Remote::TestMsg* tMsg = new Remote::TestMsg;
+   Remote::gClientThread->sendMsg(tMsg);
+}
+
+//******************************************************************************
+//******************************************************************************
+//******************************************************************************
+
+void CmdLineExec::executeEcho(Ris::CmdLineCmd* aCmd)
+{
+   aCmd->setArgDefault(1, 0);
+   int tNumWords = aCmd->argInt(1);
+
+   Remote::EchoRequestMsg* tMsg = new Remote::EchoRequestMsg;
+   Remote::gClientThread->sendMsg(tMsg);
 }
 
 //******************************************************************************
