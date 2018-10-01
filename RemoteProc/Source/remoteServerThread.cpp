@@ -260,6 +260,7 @@ void ServerThread::executeOnTimer(int aTimerCount)
    // Send an echo request message.
    EchoRequestMsg* tMsg = new EchoRequestMsg;
    tMsg->mCode1 = aTimerCount;
+   tMsg->mNumWords = 1000;
    sendMsg(0,tMsg);
 }
 
