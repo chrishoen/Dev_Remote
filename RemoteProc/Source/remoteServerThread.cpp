@@ -25,7 +25,7 @@ ServerThread::ServerThread()
    BaseClass::setThreadPriorityHigh();
 
    // Set base class timer period.
-   BaseClass::mTimerPeriod = 1000;
+   BaseClass::mTimerPeriod = gSettings.mThreadTimerPeriod;
 
    // Initialize qcalls.
    mSessionQCall.bind(this, &ServerThread::executeSession);

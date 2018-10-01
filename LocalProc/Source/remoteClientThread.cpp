@@ -25,7 +25,7 @@ ClientThread::ClientThread()
    BaseClass::mShortThread->setThreadPriorityHigh();
 
    // Set base class timer period.
-   BaseClass::mShortThread->mTimerPeriod = 1000;
+   BaseClass::mShortThread->mTimerPeriod = gSettings.mThreadTimerPeriod;
 
    // Set base class call pointers
    BaseClass::mShortThread->mThreadInitCallPointer.bind(this, &ClientThread::threadInitFunction);

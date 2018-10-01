@@ -34,10 +34,10 @@ void Settings::reset()
    strcpy(BaseClass::mDefaultFileName, "Remote_Settings.txt");
 
    mMyAppNumber = 0;
-
    mTcpServerIPAddress[0]=0;
    mTcpServerPort = 0;
    mTcpMaxSessions = 0;
+   mThreadTimerPeriod = 0;
 }
 
 //******************************************************************************
@@ -54,6 +54,8 @@ void Settings::show()
 
    printf("TcpServer               %16s : %5d\n", mTcpServerIPAddress, mTcpServerPort);
    printf("TcpMaxSessions          %16d\n",       mTcpMaxSessions);
+
+   printf("ThreadTimerPeriod       %16d\n",       mThreadTimerPeriod);
 
    printf("Settings************************************************\n");
    printf("\n");
@@ -78,7 +80,9 @@ void Settings::execute(Ris::CmdLineCmd* aCmd)
       mTcpServerPort = aCmd->argInt(2);
    }
 
-   if (aCmd->isCmd("TcpMaxSessions")) mTcpMaxSessions = aCmd->argInt(1);
+   if (aCmd->isCmd("TcpMaxSessions"))    mTcpMaxSessions = aCmd->argInt(1);
+
+   if (aCmd->isCmd("ThreadTimerPeriod")) mThreadTimerPeriod = aCmd->argInt(1);
 }
 
 //******************************************************************************

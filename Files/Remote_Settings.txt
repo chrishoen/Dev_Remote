@@ -2,28 +2,48 @@
 //********************************************************************
 //********************************************************************
 
+
 SectionBegin TcpServer
 
+   // My application number.
    MyAppNumber       101 
+   
+   // Tcp server address.
    TcpServer         0.0.0.0 55001
+   
+   // Tcp server max number of sessions.
    TcpMaxSessions    4
 
+   // Message thread timer period.
+   ThreadTimerPeriod      10
+   
 SectionEnd
 
 //********************************************************************
 SectionBegin TcpClient1
 
+   // My application number.
    MyAppNumber       201 
+
+   // Tcp server address.
    TcpServer         127.0.0.1 55001
 
+   // Message thread timer period.
+   ThreadTimerPeriod      10
+   
 SectionEnd
 
 //********************************************************************
 SectionBegin TcpClient2
 
+   // My application number.
    MyAppNumber       202 
-   MyAppRole         TcpClient 
+
+   // Tcp server address.
    TcpServer         127.0.0.1 55001
 
+   // Message thread timer period.
+   ThreadTimerPeriod      10
+   
 SectionEnd
 
