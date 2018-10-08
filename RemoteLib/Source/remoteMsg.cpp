@@ -70,8 +70,14 @@ EchoRequestMsg::EchoRequestMsg()
    mCode3 = 103;
    mCode4 = 104;
 
+<<<<<<< HEAD
    mNumWords = 0;
 }
+=======
+   mNumOfWords=0;
+   mNumOfWords=cMaxWords;
+} 
+>>>>>>> 259bf987233621c923bc3ed20de322b3a6e75d31
 
 void EchoRequestMsg::copyToFrom(Ris::ByteBuffer* aBuffer)
 {
