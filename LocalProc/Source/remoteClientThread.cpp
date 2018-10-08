@@ -68,18 +68,8 @@ void ClientThread::threadInitFunction()
    tSettings.mClientSessionQCall = mSessionQCall;
    tSettings.mRxMsgQCall = mRxMsgQCall;
 
-<<<<<<< HEAD
    // Create the child thread with the settings.
    mTcpMsgClientThread = new Ris::Net::TcpMsgClientThread(tSettings);
-=======
-   // Configure child thread.
-   mTcpClientThread->configure(
-      &mMonkeyCreator,
-      gSettings.mTcpServerIPAddress,
-      gSettings.mTcpServerPort,
-      &mSessionQCall,
-      &mRxMsgQCall);
->>>>>>> 259bf987233621c923bc3ed20de322b3a6e75d31
 
    // Launch the child thread.
    mTcpMsgClientThread->launchThread();
@@ -102,30 +92,11 @@ void  ClientThread::threadExitFunction()
 //******************************************************************************
 //******************************************************************************
 //******************************************************************************
-<<<<<<< HEAD
 // QCall registered to the mTcpMsgThread child thread. It is invoked when
 // a session is established or disestablished (when this client connects or
 // disconnects to the server). It maintains session state variables. When
 // a connection is established it sends a FirstMessage to the server to
 // inform it of it's identity.
-=======
-// executeOnTimer
-
-void ClientThread::executeOnTimer(int aTimerCount)
-{
-   if (!mPeriodicEnable) return;
-// Prn::print(Prn::ThreadRun3, "ClientThread::executeOnTimer %d", aTimerCount);
-
-   Remote::WorkRequestMsg* tMsg = new Remote::WorkRequestMsg;
-   tMsg->mCode1 = aTimerCount;
-   sendMsg(tMsg);
-}
-
-//******************************************************************************
-//******************************************************************************
-//******************************************************************************
-// QCall.
->>>>>>> 259bf987233621c923bc3ed20de322b3a6e75d31
 
 void ClientThread::executeSession (bool aConnected)
 {

@@ -3,13 +3,7 @@
 //********************************************************************
 
 
-<<<<<<< HEAD
 SectionBegin TcpServer
-=======
-   MyAppNumber   101 
-   MyAppRole     TcpServer 
-   TcpServer     0.0.0.0 55061
->>>>>>> 259bf987233621c923bc3ed20de322b3a6e75d31
 
    // My application number.
    MyAppNumber       101 
@@ -28,15 +22,8 @@ SectionEnd
 //********************************************************************
 SectionBegin TcpClient1
 
-<<<<<<< HEAD
    // My application number.
    MyAppNumber       201 
-=======
-   MyAppNumber   201 
-   MyAppRole     TcpClient 
-   TcpServer     127.0.0.1 55061
-   TcpServer     192.168.16.21 55061
->>>>>>> 259bf987233621c923bc3ed20de322b3a6e75d31
 
    // Tcp server address.
    TcpServer         127.0.0.1 55001
@@ -49,17 +36,11 @@ SectionEnd
 //********************************************************************
 SectionBegin TcpClient2
 
-<<<<<<< HEAD
    // My application number.
    MyAppNumber       202 
 
    // Tcp server address.
    TcpServer         127.0.0.1 55001
-=======
-   MyAppNumber   202 
-   MyAppRole     TcpClient 
-   TcpServer     127.0.0.1 55061
->>>>>>> 259bf987233621c923bc3ed20de322b3a6e75d31
 
    // Message thread timer period.
    ThreadTimerPeriod      10
